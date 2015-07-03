@@ -30,6 +30,7 @@ public class Player extends Actor{
 	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
 	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
 	/*constants*/
+	static final float deathDelay=.7f;
 	static final int rectWidth=5, rectHeight=10;
 	static final float gravity =900;
 	static final float jumpStrength=140f, maxJumpTime=.18f;
@@ -52,7 +53,7 @@ public class Player extends Actor{
 						00000100 up
 						00001000 jump
 	 */
-	private boolean replay;
+	public boolean replay;
 	public Player(int x, int y) {
 		collider.x=x;
 		collider.y=y;
@@ -65,7 +66,6 @@ public class Player extends Actor{
 	int inputIndex=0;
 	public void act(float delta){
 		super.act(delta);
-		
 		if(replay){
 			if(inputIndex>=inputs.size())return;
 			doInput(inputs.get(inputIndex));
@@ -96,6 +96,7 @@ public class Player extends Actor{
 	}
 
 	private void updateSprite() {
+		if(overridePositioning) return;
 		setPosition(collider.x, collider.y);
 	}
 
@@ -168,7 +169,7 @@ public class Player extends Actor{
 
 		for(Tile t: Main.currentMap.tiles){
 			if(t.collider.overlaps(collider)){
-				t.collide();
+				t.collide(this);
 				if(!t.check(0, 1)){
 					if(prevY>=t.collider.y+t.collider.height){
 						collider.y=t.collider.y+t.collider.height;
@@ -207,7 +208,7 @@ public class Player extends Actor{
 		onGround=true;
 		jumpKindness=groundTimerNiceness;
 		if(airTime>0){
-			underneath.land();
+			underneath.land(this);
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -237,36 +238,44 @@ public class Player extends Actor{
 
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(Colours.blue);
+		if(old)Colours.setBatchColour(batch, Colours.blue, .5f);
 		Draw.fillRectangle(batch, getX(), getY(), collider.width, collider.height);
 	}
 
-	
+	public boolean replaying;
 	boolean active;
 	public void die() {
+		Main.currentMap.lightsOn();
 		active=false;
 		dead.play();
-		Main.currentMap.beginRestarting();
+		addAction(Actions.delay(deathDelay, Actions.run(new Runnable() {
+			@Override
+			public void run() {
+				moveBack();
+			}
+		} )));
 	}
 
 
 
 	public void win() {
+		Main.currentMap.lightsOn();
 		active=false;
 		win.play();
-		Main.currentMap.beginRestarting();
-		beginRestarting();
+		addAction(Actions.delay(deathDelay, Actions.run(new Runnable() {
+			@Override
+			public void run() {
+				moveBack();
+			}
+		} )));
 	}
-
-	public void beginRestarting(){
-
-
-	}
-
-
 
 	private void resetStuff() {
-		dx=0;dy=0;
+		collider.x=startX; collider.y=startY;
+		updateSprite();
 		updatePreviousPosition();
+		dx=0;dy=0;
+		inputIndex=0;
 	}
 
 
@@ -276,17 +285,36 @@ public class Player extends Actor{
 	}
 
 
-
+	boolean overridePositioning;
 	public void moveBack() {
-		addAction(Actions.moveTo(startX, startY, .3f, Interpolation.pow2Out));
+		overridePositioning=true;
+		SequenceAction sa = new SequenceAction();
+		sa.addAction(Actions.moveTo(startX, startY, .3f, Interpolation.pow2Out));
+		sa.addAction(Actions.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				overridePositioning=false;
+				replaying=false;
+				Main.currentMap.finishedMovingBack();
+			}
+		}));
+		addAction(sa);
 		collider.x=startX;
 		collider.y=startY;
 		resetStuff();
 	}
 
 	public void startReplay(){
+		resetStuff();
+		replaying=true;
 		replay=true;
 		active=true;
+	}
+
+	boolean old;
+	public void setOld() {
+		old=true;
 	}
 
 }

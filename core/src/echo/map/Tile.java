@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import echo.Main;
+import echo.Player;
 import echo.map.Map.TerrainType;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
@@ -99,14 +100,14 @@ public class Tile extends Actor{
 		Draw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);
 	}
 	
-	public void collide(){
+	public void collide(Player p){
 		switch(type){
 		case background:
 			break;
 		case base:
 			break;
 		case goal:
-			Main.currentMap.currentPlayer.win();
+			p.win();
 			break;
 		case player:
 			break;
@@ -118,10 +119,10 @@ public class Tile extends Actor{
 		}
 	}
 
-	public void land() {
+	public void land(Player p) {
 		switch(type){
 		case background:
-			Main.currentMap.currentPlayer.die();
+			p.die();
 			break;
 		case base:
 			baseLand.play();

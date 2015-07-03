@@ -24,6 +24,7 @@ import echo.utilities.Colours;
 import echo.utilities.Draw;
 
 public class Map extends Group{
+	public static final float deathDelay=.7f;
 	public Tile[][] tilesArray= new Tile[Main.width/Tile.tileSize][Main.height/Tile.tileSize];
 	public ArrayList<Tile> tiles= new ArrayList<Tile>();
 	ArrayList<Player> deadPlayers= new ArrayList<Player>();
@@ -33,7 +34,7 @@ public class Map extends Group{
 		setupBorders();
 		this.mapString=string;
 		loadMap(string);
-		restart();
+		makePlayer();
 		setColor(0,0,0,0);
 
 
@@ -76,6 +77,7 @@ public class Map extends Group{
 
 
 	public void keyDown(int keyCode){
+		
 		if(keyCode==Keys.SPACE){
 			if(ready)begin();
 		}	
@@ -86,7 +88,12 @@ public class Map extends Group{
 
 	private void begin() {
 		ready=false;
+		makePlayer();
 		currentPlayer.activate();
+		for(Player p:deadPlayers){
+			p.replaying=false;
+			removeActor(p);
+		}
 		lightsOff();
 	}
 
@@ -94,6 +101,9 @@ public class Map extends Group{
 
 	public Player currentPlayer;
 	private void makePlayer() {
+		if(currentPlayer!=null && !currentPlayer.replay) return;
+		if(currentPlayer!=null) deadPlayers.add(currentPlayer);
+		removeActor(currentPlayer);
 		currentPlayer = new Player(playerStartX, playerStartY);
 		addActor(currentPlayer);
 	}
@@ -117,6 +127,7 @@ public class Map extends Group{
 	}
 
 	public void draw(Batch batch, float parentAlpha){
+		
 		batch.setColor(Colours.dark);
 		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		super.draw(batch, parentAlpha);
@@ -140,10 +151,7 @@ public class Map extends Group{
 	}
 
 
-	public void restart(){
-		if(currentPlayer!=null) deadPlayers.add(currentPlayer);
-		makePlayer();
-	}
+
 
 	public void lightsOn() {
 		addAction(Actions.alpha(0, .3f));
@@ -154,24 +162,34 @@ public class Map extends Group{
 	}
 
 	boolean ready=true;
-	public void beginRestarting() {
-		lightsOn();	
-		SequenceAction sa = new SequenceAction();
 
-		sa.addAction(Actions.delay(.7f, Actions.run(new Runnable() {
-			@Override
-			public void run() {
-				currentPlayer.moveBack();
-			}
-		})));
+
+	public void showAllReplays(){
+		ready=true;
+		for(Player p:deadPlayers){
+			deadReplay(p);
+		}
+		currentPlayer.startReplay();
+	}
+	
+	private void deadReplay(Player p) {
+		addActor(p);
+		p.startReplay();
+		p.setOld();
+	}
+	
+	public boolean finishedReplaying() {
+		if(currentPlayer.replaying) return false;
+		for(Player p:deadPlayers) if(p.replaying) return false;
+		return true;
+	}
+
+	public void finishedMovingBack() {
 		
-		sa.addAction(Actions.run(new Runnable() {
-			@Override
-			public void run() {
-				ready=true;
-				currentPlayer.startReplay();
-			}
-		}));
-		addAction(sa);
+		System.out.println("hi");
+		if(finishedReplaying()){
+			System.out.println("ho");
+			showAllReplays();
+		}
 	}
 }
