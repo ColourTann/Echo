@@ -1,44 +1,108 @@
 package echo;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AddAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
+import echo.map.Tile;
+import echo.utilities.Colours;
 import echo.utilities.Draw;
 
 public class Player extends Actor{
-	static int rectWidth=5, rectHeight=10;
-	static float gravity =900;
-	static float jumpStrength=140f, maxJumpTime=.18f;
-	static float horizontalAccel=500;
-	static float drag = .005f;
-
-	Rectangle playerRect = new Rectangle(0, 50, rectWidth, rectHeight);
-	float prevX=playerRect.x, prevY=playerRect.y;
+	/*bytes*/
+	static final byte left =	 0b1;
+	static final byte right =	 0b10;
+	static final byte up =		 0b100;
+	static final byte jump =	 0b1000;
+	/*sounds*/
+	static final Sound jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
+	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
+	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
+	/*constants*/
+	static final int rectWidth=5, rectHeight=10;
+	static final float gravity =900;
+	static final float jumpStrength=140f, maxJumpTime=.18f;
+	static final float horizontalAccel=500;
+	static final float drag = .002f;
+	static final float groundTimerNiceness=.06f;
+	static final float stepsPerSound=8.2f;
+	/*fields*/
+	Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
+	float stepper=0;
+	float prevX, prevY;
 	float dy, dx;
 	boolean jumping, onGround;
-	float jumpTime=0;
-	public Player() {
+	float jumpKindness;
+	float airTime=0;
+	int startX,startY;
+	ArrayList<Byte> inputs = new ArrayList<Byte>();
+	byte currentByte; /*00000001 left 
+						00000010 right 
+						00000100 up
+						00001000 jump
+	 */
+	private boolean replay;
+	public Player(int x, int y) {
+		collider.x=x;
+		collider.y=y;
 
+		startX=x;startY=y;
+		updateSprite();
 	}
 
 
-
+	int inputIndex=0;
 	public void act(float delta){
 		super.act(delta);
-		checkInput();
+		
+		if(replay){
+			if(inputIndex>=inputs.size())return;
+			doInput(inputs.get(inputIndex));
+			inputIndex++;
+		}
+		
+		else {
+			recordInput();
+			doInput(currentByte);
+		}
+		
+		if(!active)return;
+		jumpKindness-=Main.frameSpeed;
 		doGravity();
 		doDrag();
-		updatePosition();
+		move();
+		if(onGround)stepper+=Math.abs(dx)*Main.frameSpeed;
+		else {
+			airTime+=Main.frameSpeed;
+			stepper=0;
+		}
 		onGround=false;
+
 		checkCollisions();
 		updatePreviousPosition();
+		updateSprite();
+
 	}
 
+	private void updateSprite() {
+		setPosition(collider.x, collider.y);
+	}
+
+
+
 	private void updatePreviousPosition() {
-		prevX=playerRect.x; prevY=playerRect.y;
+		prevX=collider.x; prevY=collider.y;
 	}
 
 
@@ -49,106 +113,120 @@ public class Player extends Actor{
 
 
 
-	public void pushKey(int key){
-		if(key==Keys.UP){
-			jump();
-		}
+	public void keyDown(int keyCode){
+		if(replay)return;
+		if(keyCode==Keys.UP) currentByte|=0b1000;
+	}
+
+	private void recordInput(){
+		if(Gdx.input.isKeyPressed(Keys.LEFT)) currentByte|=left;
+		if(Gdx.input.isKeyPressed(Keys.RIGHT)) currentByte|=right;
+		if(Gdx.input.isKeyPressed(Keys.UP)) currentByte|=up;
 	}
 	
-	private void checkInput() {
-
-
+	private void doInput(byte input) {
+		if(!active)return;
 		
-		if(Gdx.input.isKeyPressed(Keys.UP)){
+		float lr=0;
+		if((input&left)>0) lr-=1;
+		if((input&right)>0) lr+=1;
+		if((input&jump)>0) jump();
+		if((input&up)>0){
 			if(jumping){
-				dy=-jumpStrength;
-				jumpTime+=Main.frameSpeed;
-				if(jumpTime>maxJumpTime){
-					jumping=false;
+				if(airTime<maxJumpTime){
+					dy=-jumpStrength;
 				}
 			}
 		}
 		else{
 			jumping=false;
 		}
-		float lr=0;
 
-		if(Gdx.input.isKeyPressed(Keys.LEFT)) lr-=1;
-		if(Gdx.input.isKeyPressed(Keys.RIGHT)) lr+=1;
 		dx+=lr*horizontalAccel*Main.frameSpeed;
+		inputs.add(currentByte);
+		currentByte=0;
 	}
 
+
+
+
+
 	private void jump() {
-		if(!onGround)return;
+		if(jumpKindness<0||!active)return;
+		jumpSound.play();
 		dy = -jumpStrength;
-		jumpTime=0;
+		airTime=0;
 		jumping=true;
 	}
 
 
 
 	private void checkCollisions() {
-		for(Rectangle collisionRect:Main.currentMap.colliders){
 
-			if(collisionRect.overlaps(playerRect)){	
-				if(prevY>=collisionRect.y+collisionRect.height){
-					playerRect.y=collisionRect.y+collisionRect.height;
-					dy=0;
+
+
+
+		for(Tile t: Main.currentMap.tiles){
+			if(t.collider.overlaps(collider)){
+				t.collide();
+				if(!t.check(0, 1)){
+					if(prevY>=t.collider.y+t.collider.height){
+						collider.y=t.collider.y+t.collider.height;
+						dy=0;
+					}
 				}
-				if(prevY+playerRect.height<=collisionRect.y){
-					playerRect.y=collisionRect.y-playerRect.height;
-					onGround=true;
-					dy=0;
+				if(!t.check(0, -1)){
+					if(prevY+collider.height<=t.collider.y){
+						collider.y=t.collider.y-collider.height;
+						dy=0;
+						touchGround(t);
+					}
 				}
 				//check to see if still colliding before checking horizontal collisions//
-				if(collisionRect.overlaps(playerRect)){
-					if(prevX>=collisionRect.y+collisionRect.width){
-						playerRect.x=collisionRect.x+collisionRect.width;
-						dx=0;
+				if(t.collider.overlaps(collider)){
+					if(!t.check(1, 0)){
+						if(prevX>=t.collider.x+t.collider.width){
+							collider.x=t.collider.x+t.collider.width;
+							dx=0;
+						}
 					}
-					if(prevX+playerRect.width<=collisionRect.x){
-						playerRect.x=collisionRect.x-playerRect.width;
-						dx=0;
+					if(!t.check(-1, 0)){
+						if(prevX+collider.width<=t.collider.x){
+							collider.x=t.collider.x-collider.width;
+							dx=0;
+						}
 					}
+
 
 				}
-
-				//				float goUp=collisionRect.y-playerRect.y-playerRect.height;
-				//				float goDown=collisionRect.y+collisionRect.height-playerRect.y;
-				//				float yDiffToClosest =(Math.abs(goUp)<Math.abs(goDown))?goUp:goDown;
-				//				
-				//				float goLeft = collisionRect.x-playerRect.x-playerRect.width;
-				//				float goRight=(collisionRect.x-playerRect.x+collisionRect.width);
-				//				float xDiffToClosest =(Math.abs(goLeft)<Math.abs(goRight))?goLeft:goRight;
-				//				
-				//				if(Math.abs(xDiffToClosest)<.1f&&Math.abs(yDiffToClosest)<.1f){
-				//					return;
-				//				}
-				//				
-				//				if(Math.abs(xDiffToClosest)<Math.abs(yDiffToClosest)){
-				//					dx=0;
-				//					playerRect.x+=xDiffToClosest;
-				//				}
-				//				else{
-				//					dy=0;
-				//					if(goUp==yDiffToClosest) onGround=true;
-				//					playerRect.y+=yDiffToClosest;
-				//				}
 			}
+		}	
+	}
+
+	private void touchGround(Tile underneath) {
+		onGround=true;
+		jumpKindness=groundTimerNiceness;
+		if(airTime>0){
+			underneath.land();
+		}
+		airTime=0;
+		if(stepper>stepsPerSound){
+			underneath.step();
+			stepper=0;
 		}
 	}
 
 
 
-	private void updatePosition() {
+	private void move() {
 		changePosition(dx*Main.frameSpeed, dy*Main.frameSpeed);
 	}
 
 
 
 	private void changePosition(float x, float y) {
-		playerRect.x+=x;
-		playerRect.y+=y;
+		collider.x+=x;
+		collider.y+=y;
 	}
 
 
@@ -158,7 +236,57 @@ public class Player extends Actor{
 	}
 
 	public void draw(Batch batch, float parentAlpha){
-		Draw.fillRectangle(batch, playerRect.x, playerRect.y, playerRect.width, playerRect.height);
+		batch.setColor(Colours.blue);
+		Draw.fillRectangle(batch, getX(), getY(), collider.width, collider.height);
+	}
+
+	
+	boolean active;
+	public void die() {
+		active=false;
+		dead.play();
+		Main.currentMap.beginRestarting();
+	}
+
+
+
+	public void win() {
+		active=false;
+		win.play();
+		Main.currentMap.beginRestarting();
+		beginRestarting();
+	}
+
+	public void beginRestarting(){
+
+
+	}
+
+
+
+	private void resetStuff() {
+		dx=0;dy=0;
+		updatePreviousPosition();
+	}
+
+
+
+	public void activate() {
+		active=true;
+	}
+
+
+
+	public void moveBack() {
+		addAction(Actions.moveTo(startX, startY, .3f, Interpolation.pow2Out));
+		collider.x=startX;
+		collider.y=startY;
+		resetStuff();
+	}
+
+	public void startReplay(){
+		replay=true;
+		active=true;
 	}
 
 }

@@ -6,6 +6,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -13,23 +14,27 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import echo.map.Map;
 import echo.utilities.Draw;
+
 
 public class Main extends ApplicationAdapter {
 	public static float frameSpeed = 1/60f;
 	SpriteBatch batch;
 	public static TextureAtlas atlas;
+
 	Stage stage;
 	OrthographicCamera cam;
-	static int width=200;
-	static int height=160;
+	public static final int width=200;
+	public static final int height=160;
 	static float scale=3;
-	public static Map currentMap = new Map();
+	public static Map currentMap;
 	Player player;
 	@Override
 	public void create () {
 		
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"), true);
+
 		
 		Gdx.graphics.setDisplayMode((int)(Main.width*scale), (int) (Main.height*scale), false);
 		
@@ -81,7 +86,8 @@ public class Main extends ApplicationAdapter {
 			
 			@Override
 			public boolean keyDown(int keycode) {
-				player.pushKey(keycode);
+				currentMap.keyDown(keycode);
+				
 				return true;
 			}
 		});
@@ -89,14 +95,18 @@ public class Main extends ApplicationAdapter {
 		for(int i=0;i<0;i++){
 			stage.addActor(new Square());
 		}
-		player = new Player();
-		stage.addActor(player);
-		stage.addActor(currentMap);
+
 		cam.zoom=1/scale;
 		cam.setToOrtho(true);
-		//cam.translate(-cam.position.x, height/2);
-		System.out.println(cam.position.x+":"+cam.position.y);
 		cam.update();
+		
+		Map.setupMap();
+		currentMap=new Map(1+"");
+		
+
+		
+		stage.addActor(currentMap);
+		
 	}
 
 	@Override
