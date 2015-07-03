@@ -158,7 +158,7 @@ public class Map extends Group{
 	}
 
 	public void lightsOff() {
-		addAction(Actions.alpha(.9f, .1f));
+		addAction(Actions.alpha(1f, .1f));
 	}
 
 	boolean ready=true;
@@ -169,6 +169,7 @@ public class Map extends Group{
 		for(Player p:deadPlayers){
 			deadReplay(p);
 		}
+		currentPlayer.toFront();
 		currentPlayer.startReplay();
 	}
 	
@@ -185,10 +186,7 @@ public class Map extends Group{
 	}
 
 	public void finishedMovingBack() {
-		
-		System.out.println("hi");
 		if(finishedReplaying()){
-			System.out.println("ho");
 			showAllReplays();
 		}
 	}

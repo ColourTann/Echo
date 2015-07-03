@@ -127,7 +127,6 @@ public class Player extends Actor{
 	
 	private void doInput(byte input) {
 		if(!active)return;
-		
 		float lr=0;
 		if((input&left)>0) lr-=1;
 		if((input&right)>0) lr+=1;
@@ -206,6 +205,7 @@ public class Player extends Actor{
 
 	private void touchGround(Tile underneath) {
 		onGround=true;
+		jumping=false;
 		jumpKindness=groundTimerNiceness;
 		if(airTime>0){
 			underneath.land(this);
@@ -238,7 +238,7 @@ public class Player extends Actor{
 
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(Colours.blue);
-		if(old)Colours.setBatchColour(batch, Colours.blue, .5f);
+		if(old)Colours.setBatchColour(batch, Colours.red, .5f);
 		Draw.fillRectangle(batch, getX(), getY(), collider.width, collider.height);
 	}
 

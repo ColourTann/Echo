@@ -27,7 +27,7 @@ public class Main extends ApplicationAdapter {
 	OrthographicCamera cam;
 	public static final int width=200;
 	public static final int height=160;
-	static float scale=3;
+	static float scale=6;
 	public static Map currentMap;
 	Player player;
 	@Override
@@ -101,7 +101,7 @@ public class Main extends ApplicationAdapter {
 		cam.update();
 		
 		Map.setupMap();
-		currentMap=new Map(1+"");
+		currentMap=new Map(4+"");
 		
 
 		
