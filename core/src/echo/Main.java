@@ -14,99 +14,108 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import echo.entity.Player;
 import echo.map.Map;
+import echo.map.Tile;
 import echo.utilities.Draw;
 
 
 public class Main extends ApplicationAdapter {
+	public static final float version = 0.1f;
 	public static float frameSpeed = 1/60f;
-	SpriteBatch batch;
-	public static TextureAtlas atlas;
+	static final int scale=1;
+	public static int tilesAcross=25;
+	public static int tilesDown=40;
+	public static final int width=scale*tilesAcross*Tile.tileWidth;
+	public static final int height=scale*tilesDown*Tile.tileHeight;
 
+	public static TextureAtlas atlas;
+	SpriteBatch batch;
 	Stage stage;
 	OrthographicCamera cam;
-	public static final int width=200;
-	public static final int height=160;
-	static float scale=6;
-	public static Map currentMap;
-	Player player;
+
+	public static Main self;
+	public Map currentMap;
+	public static double ticks;
+
 	@Override
 	public void create () {
-		
+		self=this;
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"), true);
-
-		
-		Gdx.graphics.setDisplayMode((int)(Main.width*scale), (int) (Main.height*scale), false);
-		
 		cam = new OrthographicCamera();
-		
-//		cam.zoom=1/(float)scale;
-		
-		
-//		cam.translate(-width/2, -height/2);
 		Viewport v = new ScreenViewport(cam);
 		stage = new Stage(v);
 		batch=(SpriteBatch) stage.getBatch();
 		Gdx.input.setInputProcessor(new InputProcessor() {
-			
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean touchDragged(int screenX, int screenY, int pointer) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean scrolled(int amount) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean mouseMoved(int screenX, int screenY) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean keyUp(int keycode) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean keyTyped(char character) {
 				return false;
 			}
-			
+
 			@Override
 			public boolean keyDown(int keycode) {
+				switch(keycode){
+				//				case Keys.PLUS:
+				//					scale++;
+				//					redoScale();
+				//					break;
+				//
+				//				case Keys.MINUS:
+				//					scale--;
+				//					redoScale();
+				//					break;
+				}
 				currentMap.keyDown(keycode);
-				
+
 				return true;
 			}
 		});
-		
-		for(int i=0;i<0;i++){
-			stage.addActor(new Square());
-		}
+		redoScale();
+		Map.setupMapParser();
+		changeMap(0);		
+	}
 
+	private void redoScale() {
+		Gdx.graphics.setDisplayMode((int)(Main.width*scale), (int) (Main.height*scale), false);
 		cam.zoom=1/scale;
 		cam.setToOrtho(true);
 		cam.update();
-		
-		Map.setupMap();
-		currentMap=new Map(4+"");
-		
+	}
 
-		
+	public void changeMap(int mapNum){
+		if(currentMap!=null)currentMap.remove();
+		currentMap=new Map(mapNum);
 		stage.addActor(currentMap);
-		
 	}
 
 	@Override
@@ -115,13 +124,10 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Gdx.graphics.getDeltaTime());
 		stage.draw();
-
-
-//		batch.end();
 	}
-	
+
 	public void update(float delta){
-//		Main.frameSpeed=delta;
+		ticks+=frameSpeed;
 		stage.act(delta);
 	}
 }

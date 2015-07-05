@@ -26,6 +26,7 @@ public class Colours {
 	public static Color[] colourList = new Color[] { dark, darkRed, darkBlue,
 			darkGrey, brown, green, red, grey, blue, orange, lightGrey,
 			lightGreen, pink, lightBlue, yellow, light };
+	public static final Color arachGround= make(22,26,40);
 
 	public static Color randomColor() {
 		return colourList[(int) (Math.random() * colourList.length)];
@@ -51,7 +52,7 @@ public class Colours {
 				* target.b, 1);
 	}
 
-	private static Color make(int r, int g, int b) {
+	public static Color make(int r, int g, int b) {
 		return new Color((float) (r / 255f), (float) (g / 255f),
 				(float) (b / 255f), 1);
 	}
