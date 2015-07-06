@@ -112,6 +112,8 @@ public class Tile extends Actor{
 		TextureRegion tr =null;
 		switch(type){
 		case background:
+			batch.setColor(Color.WHITE);
+			Draw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);
 			break;
 		case base:
 			tr=tilesTextures[0][1];
@@ -154,8 +156,7 @@ public class Tile extends Actor{
 			break;
 		case base:
 			break;
-		case goal:
-			p.win();
+		case goal: 
 			break;
 		case player:
 			break;

@@ -31,14 +31,14 @@ public class Player extends Actor{
 	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
 	/*constants*/
 	static final float deathDelay=.7f;
-	static final int extraHeight=Tile.tileHeight;
+	public static final int extraHeight=Tile.visibleHeight/3;
 	static final int rectWidth=Tile.tileWidth, rectHeight=(int) (Tile.visibleHeight+extraHeight);
 	static final float gravity =5400;
 	static final float jumpStrength=840f, maxJumpTime=.18f;
 	static final float horizontalAccel=3000;
 	static final float drag = .002f;
 	static final float groundTimerNiceness=.06f;
-	static final float stepsPerSound=Tile.tileWidth*2;
+	static final float stepsPerSound=Tile.tileWidth;
 	/*graphical*/
 	static final Color playerCol = Colours.make(107, 165, 214);
 	static final Color playerReplayCol = Colours.make(241, 134, 121);
@@ -137,7 +137,7 @@ public class Player extends Actor{
 		if((input&upByte)>0){
 			if(jumping){
 				if(airTime<maxJumpTime){
-					dy=-jumpStrength;
+					dy=jumpStrength;
 				}
 			}
 		}
@@ -152,27 +152,29 @@ public class Player extends Actor{
 	private void jump() {
 		if(jumpKindness<0||!active)return;
 		jumpSound.play(multiplier);
-		dy = -jumpStrength;
+		dy = jumpStrength;
 		airTime=0;
 		jumping=true;
 	}
 
 	private void checkCollisions() {
 		onGround=false;
+		
+		//first tiles//	
 		for(Tile t: Main.self.currentMap.tiles){
 			if(t.collider.overlaps(collider)){
 				t.collide(this);
 				/*vertical collisions*/
-				if(!t.checkIfInner(0, 1)){
+				if(!t.checkIfInner(0, 1)){ //bot//
 					if(prevY>=t.collider.y+t.collider.height){
-						touchCeiling(t);
 						collider.y=t.collider.y+t.collider.height;
+						touchGround(t);
 					}
 				}
-				if(!t.checkIfInner(0, -1)){
+				if(!t.checkIfInner(0, -1)){ //top//
 					if(prevY+collider.height<=t.collider.y){
 						collider.y=t.collider.y-collider.height;
-						touchGround(t);
+						touchCeiling(t);
 					}
 				}
 				//check to see if still colliding before checking horizontal collisions//
@@ -193,6 +195,12 @@ public class Player extends Actor{
 				}
 			}
 		}	
+		//then entities//
+		for(Entity e:Main.self.currentMap.entities){
+			if(e.collider.overlaps(collider)){
+				e.collideWithPlayer(this);
+			}
+		}
 	}
 
 	private void touchWall(Tile t) {
@@ -218,7 +226,7 @@ public class Player extends Actor{
 			stepper=0;
 		}
 	}
-
+	
 	private void move() {
 		changePosition(dx*Main.frameSpeed, dy*Main.frameSpeed);
 	}
@@ -229,7 +237,7 @@ public class Player extends Actor{
 	}
 
 	private void doGravity(){
-		dy+=gravity*Main.frameSpeed;
+		dy-=gravity*Main.frameSpeed;
 	}
 
 
@@ -237,7 +245,7 @@ public class Player extends Actor{
 	public void draw(Batch batch, float parentAlpha){
 		if(age>0) Colours.setBatchColour(batch, playerReplayCol, multiplier*getColor().a); 
 		else batch.setColor(playerCol);
-		Draw.fillRectangle(batch, getX(), getY(), collider.width, Tile.visibleHeight*2);
+		Draw.fillRectangle(batch, getX(), getY()-extraHeight, collider.width, Tile.visibleHeight*2);
 	}
 
 
@@ -248,7 +256,6 @@ public class Player extends Actor{
 
 	public void win() {
 		victory=true;
-		win.play();
 		endLife();
 	}
 

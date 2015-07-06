@@ -8,18 +8,24 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
 import echo.Main;
+import echo.entity.Bee;
+import echo.entity.Entity;
+import echo.entity.Frog;
 import echo.entity.Player;
+import echo.entity.Bee.Direction;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Font;
 
 public class Map extends Group{
-	public enum TerrainType{background, player, goal, base, snow, rock, grass, metal, water}
+	public enum TerrainType{background, player, goal, base, snow, rock, grass, metal, water, beeRight, beeDown}
 	public static final float deathDelay=.7f;
 	public Tile[][] tilesArray= new Tile[Main.tilesAcross][Main.tilesDown];
 	public ArrayList<Tile> tiles= new ArrayList<Tile>();
 	ArrayList<Player> deadPlayers= new ArrayList<Player>();
+	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	String mapString;
 	int playerStartX, playerStartY;
 	int level;
@@ -38,9 +44,12 @@ public class Map extends Group{
 		for(int y=Main.tilesDown/2;y>0;y--){
 			for(int x=0;x<Main.tilesAcross;x++){
 				TerrainType target=mapKey.get(p.getPixel(x, y));
-				int location = (y-1)*2;
+				int location = (p.getHeight()-y)*2-1;
 				switch(target){
 				case background:
+					break;
+				case goal:
+					addEntity(new Frog(x, location));
 					break;
 				case base:
 				case rock:
@@ -48,18 +57,33 @@ public class Map extends Group{
 				case snow:
 				case metal:
 				case water:
-					addTile(x, location+1, TerrainType.base); //add extra base tile below//
-				case goal:
+					//add extra base tile below//
+					addTile(x, location-1, TerrainType.base);
 					addTile(x, location, target);
 					break;
 				case player:
 					playerStartX=x;
-					playerStartY=location-1;
+					playerStartY=location;
+					break;
+				case beeRight:
+					addSwarm(x, location, Direction.RIGHT);
+					break;
+				case beeDown:
+					addSwarm(x, location, Direction.DOWN);
 					break;
 				default:
 					break;
 				}
 			}	
+		}
+	
+		
+	}
+
+	static int numBees=10;
+	private void addSwarm(int x, int y, Direction dir) {
+		for(int i=0; i<numBees; i++){
+			addEntity(new Bee(x, y, dir));
 		}
 	}
 
@@ -79,6 +103,7 @@ public class Map extends Group{
 	}
 
 	private void begin() {
+		resetEntities();
 		ready=false;
 		makePlayer();
 		currentPlayer.activate();
@@ -87,6 +112,11 @@ public class Map extends Group{
 			removeActor(p);
 		}
 		lightsOff();
+	}
+
+	private void resetEntities() {
+		Entity.resetTicker();
+		for(Entity e:entities) e.reset();
 	}
 
 	private void makePlayer() {
@@ -108,12 +138,28 @@ public class Map extends Group{
 		addActor(t);
 	}
 
+	private void addEntity(Entity e){
+		entities.add(e);
+		addActor(e); 
+
+	}
+	
 	private void setupBorders() {
 		int offset=20, depth=100;
-		tiles.add(new Tile(-offset, Main.height, Main.width+offset*2, depth)); //bottom//
-		tiles.add(new Tile(-offset, -depth, Main.width+offset*2, depth)); //top//
-		tiles.add(new Tile(-depth, -offset, depth, Main.height+offset*2)); //left//
-		tiles.add(new Tile(Main.width, -offset, depth, Main.height+offset*2)); //right//
+		Tile bot =new Tile(-offset, -depth, Main.width+offset*2, depth);
+		Tile top =new Tile(-offset, Main.height, Main.width+offset*2, depth);
+		Tile left = new Tile(-depth, -offset, depth, Main.height+offset*2);
+		Tile right =new Tile(Main.width, -offset, depth, Main.height+offset*2); 
+		tiles.add(bot); 
+		tiles.add(top); 
+		tiles.add(left); 
+		tiles.add(right); 
+		
+		addActor(bot);
+	 addActor(top);
+		addActor(left);
+		addActor(right);
+		
 	}
 
 	public void draw(Batch batch, float parentAlpha){
@@ -144,7 +190,7 @@ public class Map extends Group{
 			if(currentPlayer.victory){
 				s="Congratulations! Press space to continue";
 			}
-			Font.font.draw(batch, s, 50, 50);
+			Font.font.draw(batch, s, 50, 500);
 		}
 	}
 	
@@ -161,6 +207,8 @@ public class Map extends Group{
 		mapKey.put(p.getPixel(6, 0), TerrainType.water);
 		mapKey.put(p.getPixel(7, 0), TerrainType.player);
 		mapKey.put(p.getPixel(8, 0), TerrainType.goal);
+		mapKey.put(p.getPixel(9, 0), TerrainType.beeRight);
+		mapKey.put(p.getPixel(10, 0), TerrainType.beeDown);
 	}
 
 	public void lightsOn() {
@@ -174,6 +222,7 @@ public class Map extends Group{
 	}
 
 	public void showAllReplays(){
+		resetEntities();
 		for(Player p:deadPlayers){
 			deadReplay(p);
 		}

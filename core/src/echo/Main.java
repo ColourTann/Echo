@@ -14,10 +14,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
+import echo.entity.Entity;
 import echo.entity.Player;
 import echo.map.Map;
 import echo.map.Tile;
 import echo.utilities.Draw;
+import echo.utilities.Font;
 
 
 public class Main extends ApplicationAdapter {
@@ -41,7 +43,7 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void create () {
 		self=this;
-		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"), true);
+		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"));
 		cam = new OrthographicCamera();
 		Viewport v = new ScreenViewport(cam);
 		stage = new Stage(v);
@@ -96,7 +98,6 @@ public class Main extends ApplicationAdapter {
 				//					break;
 				}
 				currentMap.keyDown(keycode);
-
 				return true;
 			}
 		});
@@ -108,7 +109,7 @@ public class Main extends ApplicationAdapter {
 	private void redoScale() {
 		Gdx.graphics.setDisplayMode((int)(Main.width*scale), (int) (Main.height*scale), false);
 		cam.zoom=1/scale;
-		cam.setToOrtho(true);
+		cam.setToOrtho(false);
 		cam.update();
 	}
 
@@ -124,9 +125,14 @@ public class Main extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Gdx.graphics.getDeltaTime());
 		stage.draw();
+		
+		batch.begin();
+		Font.font.draw(batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 1, Gdx.graphics.getHeight());
+		batch.end();
 	}
 
 	public void update(float delta){
+		Entity.update(delta);
 		ticks+=frameSpeed;
 		stage.act(delta);
 	}
