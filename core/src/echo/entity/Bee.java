@@ -1,6 +1,7 @@
 package echo.entity;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,9 +18,10 @@ import echo.utilities.Noise;
 
 public class Bee extends Entity{
 	public enum Direction{RIGHT, DOWN}
+	static final Sound[] move = new Sound[]{Gdx.audio.newSound(Gdx.files.internal("sfx/beemove0.wav")), Gdx.audio.newSound(Gdx.files.internal("sfx/beemove1.wav"))};
 	static float stayTime=1;
 	static float moveTime=1.5f;
-	static float moveAmount=Tile.tileWidth*10;
+	static float moveAmount=Tile.tileWidth*9;
 	static float animationSpeed=20;
 	static float noiseFreq=1;
 	static float noiseAmp=30;
@@ -34,8 +36,11 @@ public class Bee extends Entity{
 	float xNoiseOffset, yNoiseOffset;
 	Direction dir;
 	boolean moved;
-	
-	public Bee(int x, int y, Direction dir) {
+	boolean prime;
+	boolean beeSound;
+	public Bee(int x, int y, Direction dir, boolean prime, boolean beeSound) {
+		
+		this.prime=prime&&beeSound;
 		this.dir=dir;
 		this.startX=x*Tile.tileWidth+Tile.tileWidth/2; this.startY=y*Tile.tileHeight-Player.extraHeight+Tile.tileHeight/2;
 		setSize(animation[0].getRegionWidth(), animation[0].getRegionHeight());
@@ -55,15 +60,32 @@ public class Bee extends Entity{
 		frameTicker=0;
 		clearActions();
 		arrive();
+		tick=0;
 	}
-	
+	int tick;
 	private void arrive() {
 		SequenceAction sa = new SequenceAction();
 		sa.addAction(Actions.delay(stayTime));
-		sa.addAction(Actions.moveBy(moved?-moveAmount:moveAmount, 0, moveTime, new Interpolation.Swing(1)));
+		sa.addAction(Actions.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				if(!prime) return;
+				addAction(Actions.delay(.4f, Actions.run( new Runnable() {
+					public void run() {
+						move[moved?1:0].play();
+					}
+				})));
+				
+			}
+		}));
+		float toMove=moved?-moveAmount:moveAmount;
+		
+		sa.addAction(Actions.moveBy(dir==Direction.RIGHT?toMove:0, dir==Direction.DOWN?toMove:0, moveTime, new Interpolation.Swing(1)));
 		sa.addAction(Actions.run(new Runnable() {
 			@Override
 			public void run() {
+				
 				moved=!moved;
 				arrive();
 			}			
@@ -72,12 +94,14 @@ public class Bee extends Entity{
 	}
 	
 	@Override
-	public void collideWithPlayer(Player p) {
-		p.die();
+	public CollisionResult collideWithPlayer(Player p) {
+		if(!p.active)return null;
+		return CollisionResult.Death;
 	}
 	
 	public void act(float delta){
 		super.act(delta);
+//		if(prime)System.out.println("bee: "+tick++);
 		frameTicker+=Main.frameSpeed*animationSpeed;
 		currentFrame=(int) (frameTicker%animation.length);
 		xWiggle=(float)(Noise.noise(Entity.ticker*noiseFreq+xNoiseOffset)*noiseAmp);

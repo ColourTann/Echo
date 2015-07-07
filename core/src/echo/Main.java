@@ -23,8 +23,8 @@ import echo.utilities.Font;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.1f;
-	public static float frameSpeed = 1/60f;
+	public static final float version = 0.2f;
+	public static final float frameSpeed = 1/60f;
 	static final int scale=1;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
@@ -39,7 +39,7 @@ public class Main extends ApplicationAdapter {
 	public static Main self;
 	public Map currentMap;
 	public static double ticks;
-
+	public static int level=0;
 	@Override
 	public void create () {
 		self=this;
@@ -103,7 +103,7 @@ public class Main extends ApplicationAdapter {
 		});
 		redoScale();
 		Map.setupMapParser();
-		changeMap(0);		
+		changeMap(level);		
 	}
 
 	private void redoScale() {
@@ -126,9 +126,9 @@ public class Main extends ApplicationAdapter {
 		update(Gdx.graphics.getDeltaTime());
 		stage.draw();
 		
-		batch.begin();
+		/*batch.begin();
 		Font.font.draw(batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 1, Gdx.graphics.getHeight());
-		batch.end();
+		batch.end();*/
 	}
 
 	public void update(float delta){

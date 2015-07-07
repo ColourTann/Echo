@@ -15,12 +15,13 @@ import echo.entity.Entity;
 import echo.entity.Frog;
 import echo.entity.Player;
 import echo.entity.Bee.Direction;
+import echo.entity.Spike;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Font;
 
 public class Map extends Group{
-	public enum TerrainType{background, player, goal, base, snow, rock, grass, metal, water, beeRight, beeDown}
+	public enum TerrainType{background, player, goal, base, snow, rock, grass, metal, water, beeRight, beeDown, spike}
 	public static final float deathDelay=.7f;
 	public Tile[][] tilesArray= new Tile[Main.tilesAcross][Main.tilesDown];
 	public ArrayList<Tile> tiles= new ArrayList<Tile>();
@@ -32,7 +33,7 @@ public class Map extends Group{
 	public Player currentPlayer;
 	public boolean ready=true;
 	public Map(int levelNum) {		
-		this.level=levelNum;;
+		this.level=levelNum;
 		loadMap(levelNum+"");
 		setupBorders();
 		makePlayer();
@@ -40,6 +41,7 @@ public class Map extends Group{
 	}
 
 	private void loadMap(String string) {
+		boolean beeSound=true;
 		Pixmap p = Draw.getPix("map/"+string);
 		for(int y=Main.tilesDown/2;y>0;y--){
 			for(int x=0;x<Main.tilesAcross;x++){
@@ -66,10 +68,15 @@ public class Map extends Group{
 					playerStartY=location;
 					break;
 				case beeRight:
-					addSwarm(x, location, Direction.RIGHT);
+					addSwarm(x, location, Direction.RIGHT, beeSound);
+					beeSound=false;
 					break;
 				case beeDown:
-					addSwarm(x, location, Direction.DOWN);
+					addSwarm(x, location, Direction.DOWN, beeSound);
+					beeSound=false;
+					break;
+				case spike:
+					addEntity(new Spike(x, location));
 					break;
 				default:
 					break;
@@ -80,13 +87,19 @@ public class Map extends Group{
 		
 	}
 
+	public void act(float delta){
+		super.act(delta);
+	}
+	
 	static int numBees=10;
-	private void addSwarm(int x, int y, Direction dir) {
+	private void addSwarm(int x, int y, Direction dir, boolean beeSound) {
 		for(int i=0; i<numBees; i++){
-			addEntity(new Bee(x, y, dir));
+			addEntity(new Bee(x, y, dir, i==0, beeSound));
 		}
 	}
 
+
+	
 	public void keyDown(int keyCode){
 		switch(keyCode){
 		case Keys.HOME:
@@ -94,8 +107,10 @@ public class Map extends Group{
 			break;
 		case Keys.SPACE:
 			if(ready){
-				if(currentPlayer!=null&&currentPlayer.victory) Main.self.changeMap((++level)%10);
-				else begin();
+				if(currentPlayer!=null&&currentPlayer.victory) Main.self.changeMap((++Main.level)%13);
+				else {
+					begin();
+				}
 			}
 			break;
 		}
@@ -107,6 +122,7 @@ public class Map extends Group{
 		ready=false;
 		makePlayer();
 		currentPlayer.activate();
+		currentPlayer.reset();
 		for(Player p:deadPlayers){
 			p.replaying=false;
 			removeActor(p);
@@ -121,13 +137,16 @@ public class Map extends Group{
 
 	private void makePlayer() {
 		if(currentPlayer!=null){
-			if(!currentPlayer.replay) return; //already has a player (probably only start of the game?//
+			if(!currentPlayer.replay){
+				currentPlayer.reset();
+				return; //already has a player (probably only start of the game?//
+			}
 			deadPlayers.add(currentPlayer);
-			currentPlayer.resetStuff();
 		}
-		for(Player p:deadPlayers) p.age(); 
+		for(Player p:deadPlayers)p.age();
 		removeActor(currentPlayer);
 		currentPlayer = new Player(playerStartX, playerStartY);
+		currentPlayer.reset();
 		addActor(currentPlayer);
 	}
 
@@ -162,6 +181,7 @@ public class Map extends Group{
 		
 	}
 
+	
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
@@ -172,9 +192,9 @@ public class Map extends Group{
 		batch.setColor(getColor());
 		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then the goal (it's currently drawing twice....)//
-		for(Tile t:tiles){
-			if(t.type==TerrainType.goal){
-				t.draw(batch, parentAlpha);
+		for(Entity e:entities){
+			if(e instanceof Frog){
+				e.draw(batch, parentAlpha);
 			}
 		}
 		//bad tutorial code//
@@ -209,6 +229,7 @@ public class Map extends Group{
 		mapKey.put(p.getPixel(8, 0), TerrainType.goal);
 		mapKey.put(p.getPixel(9, 0), TerrainType.beeRight);
 		mapKey.put(p.getPixel(10, 0), TerrainType.beeDown);
+		mapKey.put(p.getPixel(11, 0), TerrainType.spike);
 	}
 
 	public void lightsOn() {
@@ -218,9 +239,9 @@ public class Map extends Group{
 
 	public void lightsOff() {
 		clearActions();
-		addAction(Actions.alpha(1f, 0));
+		addAction(Actions.alpha(1, 0));
 	}
-
+	
 	public void showAllReplays(){
 		resetEntities();
 		for(Player p:deadPlayers){
@@ -231,8 +252,8 @@ public class Map extends Group{
 	}
 
 	private void deadReplay(Player p) {
-		addActor(p);
 		p.startReplay();
+		addActor(p);
 	}
 
 	public boolean finishedReplaying() {
@@ -240,7 +261,6 @@ public class Map extends Group{
 		for(Player p:deadPlayers) if(p.replaying) return false;
 		return true;
 	}
-
 	public void finishedMovingBack() {
 		ready=true;
 		if(finishedReplaying()){

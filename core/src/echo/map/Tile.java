@@ -26,7 +26,7 @@ public class Tile extends Actor{
 	static Sound grassStep = Gdx.audio.newSound(Gdx.files.internal("sfx/grassfoot.wav"));
 	static Sound grassLand = Gdx.audio.newSound(Gdx.files.internal("sfx/grassland.wav"));
 
-	static TextureRegion[][] tilesTextures = TextureRegion.split(new Texture(Gdx.files.internal("map/tiles.png")), 32, 32);
+	public static TextureRegion[] tilesTextures = TextureRegion.split(new Texture(Gdx.files.internal("map/tiles.png")), 32, 32)[0];
 	static final Color goal = Colours.make(212,240,58);
 	public static final int tileWidth=32;
 	public static final int tileHeight=16;
@@ -116,25 +116,25 @@ public class Tile extends Actor{
 			Draw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);
 			break;
 		case base:
-			tr=tilesTextures[0][1];
+			tr=tilesTextures[1];
 			break;
 		case rock:
-			tr=tilesTextures[0][2];
+			tr=tilesTextures[2];
 			break;
 		case grass:
-			tr=tilesTextures[0][3];
+			tr=tilesTextures[3];
 			break;
 		case snow:
-			tr=tilesTextures[0][4];
+			tr=tilesTextures[4];
 			break;
 		case metal:
-			tr=tilesTextures[0][5];
+			tr=tilesTextures[5];
 			break;
 		case water:
-			tr=tilesTextures[0][6];
+			tr=tilesTextures[6];
 			break;
 		case goal:
-			Colours.setBatchColour(batch, goal, (float) (Math.sin(Main.ticks*4))/3+.5f);
+			
 			break;
 		case player:
 			break;

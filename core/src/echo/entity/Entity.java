@@ -1,9 +1,11 @@
 package echo.entity;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import echo.Main;
+import echo.utilities.Draw;
 
 public abstract class Entity extends Actor{
 	static float ticker=0;
@@ -13,8 +15,8 @@ public abstract class Entity extends Actor{
 	protected void setupCollider(){
 		collider= new Rectangle(getX(), getY(), getWidth(), getHeight());
 	}
-	
-	public abstract void collideWithPlayer(Player p);
+	public enum CollisionResult{Death, Glory}
+	public abstract CollisionResult collideWithPlayer(Player p);
 	public abstract void reset();
 	public static void resetTicker(){
 		ticker=0;
@@ -22,5 +24,9 @@ public abstract class Entity extends Actor{
 
 	public static void update(float delta) {
 		ticker+=Main.frameSpeed;
+	}
+	public void drawCollider(Batch batch){
+		batch.setColor(1,1,1,.5f);
+		Draw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);
 	}
 }

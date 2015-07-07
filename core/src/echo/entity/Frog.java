@@ -2,13 +2,16 @@ package echo.entity;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
+import echo.Main;
 import echo.map.Tile;
+import echo.utilities.Colours;
 import echo.utilities.Draw;
 
 
@@ -28,14 +31,14 @@ public class Frog extends Entity{
 	}
 	
 	public void draw(Batch batch, float parentAlpha){
-		batch.setColor(1,1,1,1);
+		Colours.setBatchColour(batch, Color.WHITE, (float) (Math.sin(Main.ticks*4))/5+.7f);
 		Draw.draw(batch, animation[0], getX(), getY());
 	}
 
 	@Override
-	public void collideWithPlayer(Player p) {
+	public CollisionResult collideWithPlayer(Player p) {
 		punched.play();
-		p.win();
+		return CollisionResult.Glory;
 	}
 
 	@Override

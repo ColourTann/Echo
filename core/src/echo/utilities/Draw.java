@@ -37,6 +37,8 @@ public class Draw {
 				rad2deg(radianRotation), 0, 0, t.getWidth(), t.getHeight(),
 				xFlip, yFlip);
 	}
+	
+
 
 	// Centered stuff//
 
