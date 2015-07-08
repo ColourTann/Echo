@@ -18,6 +18,7 @@ public abstract class Entity extends Actor{
 	public enum CollisionResult{Death, Glory}
 	public abstract CollisionResult collideWithPlayer(Player p);
 	public abstract void reset();
+	public abstract void begin();
 	public static void resetTicker(){
 		ticker=0;
 	}

@@ -44,5 +44,9 @@ public class Frog extends Entity{
 	@Override
 	public void reset() {
 	}
+
+	@Override
+	public void begin() {
+	}
 	
 }

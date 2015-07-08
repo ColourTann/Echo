@@ -3,6 +3,7 @@ package echo.map;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -83,14 +84,14 @@ public class Map extends Group{
 				}
 			}	
 		}
-	
-		
+
+
 	}
 
 	public void act(float delta){
 		super.act(delta);
 	}
-	
+
 	static int numBees=10;
 	private void addSwarm(int x, int y, Direction dir, boolean beeSound) {
 		for(int i=0; i<numBees; i++){
@@ -98,40 +99,65 @@ public class Map extends Group{
 		}
 	}
 
+	boolean victory;
 
-	
 	public void keyDown(int keyCode){
 		switch(keyCode){
 		case Keys.HOME:
 			lightsOn(); // cheeeats //
 			break;
-		case Keys.SPACE:
+
+		case Keys.UP:
+		case Keys.LEFT:
+		case Keys.RIGHT:
+		case Keys.DOWN:
 			if(ready){
-				if(currentPlayer!=null&&currentPlayer.victory) Main.self.changeMap((++Main.level)%13);
-				else {
-					begin();
-				}
+				begin();
+			}
+			break;
+
+		case Keys.SPACE:
+			if(victory){
+				Main.self.changeMap((++Main.level)%13);
+			}
+			if(replaying){
+				resetLevel();
 			}
 			break;
 		}
 		currentPlayer.keyDown(keyCode);
 	}
 
-	private void begin() {
-		resetEntities();
-		ready=false;
+	boolean replaying;
+	private void resetLevel(){
+		replaying=false;
+		ready=true;
 		makePlayer();
-		currentPlayer.activate();
+		resetEntities();
 		currentPlayer.reset();
 		for(Player p:deadPlayers){
 			p.replaying=false;
 			removeActor(p);
 		}
+		
+	}
+
+	private void beginEntities() {
+		for(Entity e :entities){
+			e.begin();
+		}
+	}
+
+	private void begin() {
+		ready=false;
+		resetEntities();
+		currentPlayer.activate();
+		beginEntities();
 		lightsOff();
 	}
 
 	private void resetEntities() {
-		Entity.resetTicker();
+//		Entity.resetTicker();
 		for(Entity e:entities) e.reset();
 	}
 
@@ -162,7 +188,7 @@ public class Map extends Group{
 		addActor(e); 
 
 	}
-	
+
 	private void setupBorders() {
 		int offset=20, depth=100;
 		Tile bot =new Tile(-offset, -depth, Main.width+offset*2, depth);
@@ -173,15 +199,15 @@ public class Map extends Group{
 		tiles.add(top); 
 		tiles.add(left); 
 		tiles.add(right); 
-		
+
 		addActor(bot);
-	 addActor(top);
+		addActor(top);
 		addActor(left);
 		addActor(right);
-		
+
 	}
 
-	
+
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
@@ -198,22 +224,53 @@ public class Map extends Group{
 			}
 		}
 		//bad tutorial code//
-		if(ready){
-			String s="";
-			if(deadPlayers.size()==0&&!currentPlayer.replay){
-				if(level==0) s= "Version "+Main.version+"\nTurn your sound up!\nArrow keys to move\nPress space to start";
-				else s="Press space to start";
-			}
-			else{
-				s="Replaying\nPress space to retry";
-			}
-			if(currentPlayer.victory){
-				s="Congratulations! Press space to continue";
-			}
-			Font.font.draw(batch, s, 50, 500);
+
+		String s="";
+		if(level==0) s= "Version "+Main.version+"\nTurn your sound up!\nArrow keys to move\n";
+		if(replaying)s="Replaying\nPress space to retry";
+		if(victory) s="Congratulations! Press space to continue";
+		Font.font.draw(batch, s, 10, Main.height-10);
+
+	}
+
+
+
+	public void lightsOn() {
+		clearActions();
+		addAction(Actions.alpha(0, .3f));
+	}
+
+	public void lightsOff() {
+		clearActions();
+		addAction(Actions.alpha(1, .15f));
+	}
+
+	public void showAllReplays(){
+		replaying=true;
+		resetEntities();
+		for(Player p:deadPlayers){
+			deadReplay(p);
+		}
+		beginEntities();
+		currentPlayer.toFront();
+		currentPlayer.startReplay();
+	}
+
+	private void deadReplay(Player p) {
+		p.startReplay();
+		addActor(p);
+	}
+
+	public boolean finishedReplaying() {
+		if(currentPlayer.replaying) return false;
+		for(Player p:deadPlayers) if(p.replaying) return false;
+		return true;
+	}
+	public void finishedMovingBack() {
+		if(finishedReplaying()){
+			showAllReplays();
 		}
 	}
-	
 
 	static HashMap<Integer, TerrainType> mapKey= new HashMap<Integer, Map.TerrainType>();
 	public static void setupMapParser() {
@@ -232,39 +289,8 @@ public class Map extends Group{
 		mapKey.put(p.getPixel(11, 0), TerrainType.spike);
 	}
 
-	public void lightsOn() {
-		clearActions();
-		addAction(Actions.alpha(0, .3f));
+	public void levelComplete() {
+		victory=true;
 	}
 
-	public void lightsOff() {
-		clearActions();
-		addAction(Actions.alpha(1, 0));
-	}
-	
-	public void showAllReplays(){
-		resetEntities();
-		for(Player p:deadPlayers){
-			deadReplay(p);
-		}
-		currentPlayer.toFront();
-		currentPlayer.startReplay();
-	}
-
-	private void deadReplay(Player p) {
-		p.startReplay();
-		addActor(p);
-	}
-
-	public boolean finishedReplaying() {
-		if(currentPlayer.replaying) return false;
-		for(Player p:deadPlayers) if(p.replaying) return false;
-		return true;
-	}
-	public void finishedMovingBack() {
-		ready=true;
-		if(finishedReplaying()){
-			showAllReplays();
-		}
-	}
 }

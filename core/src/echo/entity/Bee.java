@@ -53,16 +53,16 @@ public class Bee extends Entity{
 	@Override
 	public void reset() {
 		setPosition(startX,  startY);
-		xWiggle=0;
-		yWiggle=0;
 		moved=false;
 		currentFrame=0;
 		frameTicker=0;
 		clearActions();
-		arrive();
-		tick=0;
+
 	}
-	int tick;
+
+	
+
+	
 	private void arrive() {
 		SequenceAction sa = new SequenceAction();
 		sa.addAction(Actions.delay(stayTime));
@@ -111,6 +111,12 @@ public class Bee extends Entity{
 	}
 	
 	public void draw(Batch batch, float parentAlpha){
+		batch.setColor(1,1,1,1);
 		Draw.drawCentered(batch, animation[currentFrame], getX()+xWiggle, getY()+yWiggle);
+	}
+
+	@Override
+	public void begin() {
+		arrive();
 	}
 }

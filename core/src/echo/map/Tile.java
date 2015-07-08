@@ -79,26 +79,27 @@ public class Tile extends Actor{
 	}
 	
 	public void step(Player p){
+		Sound s=null;
 		switch(type){
 		case background:
 			break;
 		case rock:
-			rockStep.play(p.multiplier);
+			s=rockStep;
 			break;
 		case goal:
 			break;
 		case player:
 			break;
 		case snow:
-			snowStep.play(p.multiplier);
+			s=snowStep;
 			break;
 		case base:
 			break;
 		case grass:
-			grassStep.play(p.multiplier);
+			s=grassStep;
 			break;
 		case metal:
-			metalStep.play(p.multiplier);
+			s=metalStep;
 			break;
 		case water:
 			break;
@@ -106,7 +107,19 @@ public class Tile extends Actor{
 			break;
 
 		}
+		if(s==null) return;
+		
+		
+		s.play(p.multiplier, getPitch(), 0);
+		
+		
 	}
+	
+	static final float variance = .1f;
+	float getPitch(){
+		return (float) (Math.random()*variance*2+(1-variance));
+	}
+	
 
 	public void draw(Batch batch, float parentAlpha){
 		TextureRegion tr =null;
@@ -168,33 +181,34 @@ public class Tile extends Actor{
 	}
 
 	public void land(Player p) {
+		Sound s=null;
 		switch(type){
 		case background:
 			p.die();
 			break;
 		case rock:
-			rockLand.play(p.multiplier);
+			s=rockLand;
 			break;
 		case goal:
 			break;
 		case player:
 			break;
 		case snow:
-			snowLand.play(p.multiplier);
+			s=snowLand;
 			break;
 		case base:
 			break;
 		case grass:
-			grassLand.play(p.multiplier);
+			s=grassLand;
 			break;
 		case metal:
-			metalLand.play(p.multiplier);
+			s=metalLand;
 			break;
 		case water:
 			break;
 		default:
 			break;
-	
 		}
+		s.play(p.multiplier, getPitch(), 0);
 	}
 }

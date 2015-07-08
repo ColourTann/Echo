@@ -59,6 +59,10 @@ public class Player extends Entity{
 	/*positioning*/
 	int startX,startY;
 	Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
+	
+	static final int feetWidth=(int) (rectWidth*.1f);
+	static final int feetHeight=1;
+	Rectangle feet = new Rectangle(0, 0, feetWidth, feetHeight);
 	float stepper=0; 
 	float prevX, prevY;
 	float dx, dy;
@@ -114,6 +118,11 @@ public class Player extends Entity{
 		admin();
 	}
 
+	private void updateFootCollider(){
+		feet.x=collider.x+collider.width/2-feet.width/2;
+		feet.y=collider.y-1;
+	}
+	
 	private void admin() {
 		float mult=dy==0?1:.4f;
 		
@@ -268,14 +277,26 @@ public class Player extends Entity{
 		onGround=true;
 		jumping=false;
 		jumpKindness=groundTimerNiceness;
+		updateFootCollider();
+		Tile t = getTileUnderFeet();
+		if(t==null){
+			t=underneath;
+		}
 		if(airTime>0){
-			underneath.land(this);
+			t.land(this);
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
-			underneath.step(this);
+			t.step(this);
 			stepper=0;
 		}
+	}
+
+	private Tile getTileUnderFeet() {
+		for(Tile t:Main.self.currentMap.tiles){
+			if(t.collider.overlaps(feet))return t;
+		}
+		return null;
 	}
 
 	private void move() {
@@ -299,8 +320,8 @@ public class Player extends Entity{
 		Draw.draw(batch, run[(int) frameTicker], getX()-extraWidth, getY()-extraHeight);
 		
 		//draw collider//
-		/*batch.setColor(1,1,1,.5f);
-		Drw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);*/
+//		batch.setColor(1,1,1,.5f);
+//		Draw.fillRectangle(batch, feet.x, feet.y, feet.width, feet.height);
 	}
 
 
@@ -313,6 +334,7 @@ public class Player extends Entity{
 
 	public void win() {
 		victory=true;
+		Main.self.currentMap.levelComplete();
 		endLife();
 	}
 
@@ -416,5 +438,9 @@ public class Player extends Entity{
 		updatePreviousPosition();
 		inputIndex=0;
 		clearActions();	
+	}
+
+	@Override
+	public void begin() {
 	}
 }
