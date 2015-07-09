@@ -1,24 +1,20 @@
 package echo.entity;
 
-import java.time.temporal.IsoFields;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import echo.Main;
 import echo.map.Tile;
-import echo.map.Map.TerrainType;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 
@@ -46,8 +42,14 @@ public class Player extends Entity{
 	static final float groundTimerNiceness=.06f;
 	static final float stepsPerSound=Tile.tileWidth;
 	/*graphical*/
-	static Texture sheetRun = new Texture(Gdx.files.internal("entity/playerrun.png"));
-	static TextureRegion[] run = TextureRegion.split(sheetRun, sheetRun.getWidth()/8, sheetRun.getHeight())[0];
+	static TextureRegion[] run;
+	static {
+		TextureRegion sheetRun = Main.atlas.findRegion("player/run");
+		run = sheetRun.split(sheetRun.getRegionWidth()/8, sheetRun.getRegionHeight())[0];
+	}
+	 
+	 
+	static TextureRegion idle = Main.atlas.findRegion("player/idle");
 	static final int rectWidth=run[0].getRegionWidth()/2, rectHeight=(int) (run[0].getRegionHeight()/1.4f);
 	public static final int extraWidth=rectWidth/2;
 	static final Color playerCol = Colours.make(107, 165, 214);
@@ -131,7 +133,11 @@ public class Player extends Entity{
 		
 		frameTicker%=run.length;
 		jumpKindness-=Main.frameSpeed;
-		if(onGround)stepper+=Math.abs(dx)*Main.frameSpeed;
+		if(onGround){
+			float stepAmount = Math.abs(dx);
+			stepAmount=Math.min(stepAmount, 250);
+			stepper+=Math.abs(stepAmount)*Main.frameSpeed;
+		}
 		else {
 			airTime+=Main.frameSpeed;
 			stepper=0;
@@ -300,6 +306,7 @@ public class Player extends Entity{
 	}
 
 	private void move() {
+		if(Math.abs(dx)<=10)dx=0;
 		changePosition(dx*Main.frameSpeed, dy*Main.frameSpeed);
 	}
 
@@ -311,13 +318,25 @@ public class Player extends Entity{
 	private void doGravity(){
 		dy-=gravity*Main.frameSpeed;
 	}
-
+	static int jumpFrameThreshold=400;
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(1,1,1,1);
 		if(age>0) Colours.setBatchColour(batch, playerReplayCol, multiplier*getColor().a);
+		
 		TextureRegion toDraw=run[(int) frameTicker];
+		//if(dx==0) toDraw=idle;
+		
+		if(dy!=0){
+			
+			if(dy>jumpFrameThreshold) toDraw=run[5];
+			else if(dy<-jumpFrameThreshold) toDraw=run[7];
+			else toDraw = run[6];
+			
+		}
+		
+		
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
-		Draw.draw(batch, run[(int) frameTicker], getX()-extraWidth, getY()-extraHeight);
+		Draw.draw(batch, toDraw, getX()-extraWidth, getY()-extraHeight);
 		
 		//draw collider//
 //		batch.setColor(1,1,1,.5f);

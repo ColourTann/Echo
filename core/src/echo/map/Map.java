@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -13,7 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import echo.Main;
 import echo.entity.Bee;
 import echo.entity.Entity;
-import echo.entity.Frog;
+import echo.entity.Fairy;
+import echo.entity.Portal;
 import echo.entity.Player;
 import echo.entity.Bee.Direction;
 import echo.entity.Spike;
@@ -22,7 +25,17 @@ import echo.utilities.Draw;
 import echo.utilities.Font;
 
 public class Map extends Group{
-	public enum TerrainType{background, player, goal, base, snow, rock, grass, metal, water, beeRight, beeDown, spike}
+	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
+	Sound[] foot = new Sound[2];
+	TerrainType(){
+		for(int i=0;i<2;i++){
+			FileHandle f = Gdx.files.internal("sfx/"+this+"foot"+i+".wav");
+			System.out.println(f);
+			if(!f.exists()) break;
+			foot[i]=Gdx.audio.newSound(f);
+		}
+	}
+	}
 	public static final float deathDelay=.7f;
 	public Tile[][] tilesArray= new Tile[Main.tilesAcross][Main.tilesDown];
 	public ArrayList<Tile> tiles= new ArrayList<Tile>();
@@ -39,6 +52,14 @@ public class Map extends Group{
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
+		addFairy();
+	}
+
+	private void addFairy() {
+		Fairy f = Fairy.get();
+		f.setStart(10, 10);
+		addEntity(f);
+		f.flyTo(700, 700);
 	}
 
 	private void loadMap(String string) {
@@ -52,10 +73,10 @@ public class Map extends Group{
 				case background:
 					break;
 				case goal:
-					addEntity(new Frog(x, location));
+					addEntity(new Portal(x, location));
 					break;
 				case base:
-				case rock:
+				case stone:
 				case grass:
 				case snow:
 				case metal:
@@ -118,7 +139,7 @@ public class Map extends Group{
 
 		case Keys.SPACE:
 			if(victory){
-				Main.self.changeMap((++Main.level)%13);
+//				Main.self.changeMap((++Main.level)%13);
 			}
 			if(replaying){
 				resetLevel();
@@ -139,7 +160,7 @@ public class Map extends Group{
 			p.replaying=false;
 			removeActor(p);
 		}
-		
+
 	}
 
 	private void beginEntities() {
@@ -157,7 +178,7 @@ public class Map extends Group{
 	}
 
 	private void resetEntities() {
-//		Entity.resetTicker();
+		//		Entity.resetTicker();
 		for(Entity e:entities) e.reset();
 	}
 
@@ -211,15 +232,15 @@ public class Map extends Group{
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
-		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+//		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then actors//
 		super.draw(batch, parentAlpha);
 		//then darkness//
 		batch.setColor(getColor());
-		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+//		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then the goal (it's currently drawing twice....)//
 		for(Entity e:entities){
-			if(e instanceof Frog){
+			if(e instanceof Portal){
 				e.draw(batch, parentAlpha);
 			}
 		}
@@ -277,7 +298,7 @@ public class Map extends Group{
 		Pixmap p = Draw.getPix("map/0");
 		mapKey.put(p.getPixel(0, 0), TerrainType.background);
 		mapKey.put(p.getPixel(1, 0), TerrainType.base);
-		mapKey.put(p.getPixel(2, 0), TerrainType.rock);
+		mapKey.put(p.getPixel(2, 0), TerrainType.stone);
 		mapKey.put(p.getPixel(3, 0), TerrainType.grass);
 		mapKey.put(p.getPixel(4, 0), TerrainType.snow);
 		mapKey.put(p.getPixel(5, 0), TerrainType.metal);

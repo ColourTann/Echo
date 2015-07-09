@@ -81,7 +81,13 @@ public class Draw {
 	}
 
 
-
+	private double angleTo(double from, double to){
+		while(Math.abs(from-to)>Math.PI){
+			if(from<0) from+=Math.PI*2;
+			else to+=Math.PI*2;
+		}
+		return to-from;
+	}
 	public static void drawRotatedScaled(Batch batch, TextureRegion t, float x,
 			float y, float scaleX, float scaleY, float radianRotation) {
 		batch.draw(t, x, y, 0f, 0f, t.getRegionWidth(), t.getRegionHeight(),

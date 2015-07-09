@@ -1,5 +1,7 @@
 package echo;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -15,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import echo.entity.Entity;
+import echo.entity.Fairy;
 import echo.entity.Player;
 import echo.map.Map;
 import echo.map.Tile;
@@ -42,6 +46,7 @@ public class Main extends ApplicationAdapter {
 	public static int level=0;
 	@Override
 	public void create () {
+		t= new Texture(Gdx.files.internal("grass.jpg"));
 		self=this;
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"));
 		cam = new OrthographicCamera();
@@ -103,7 +108,10 @@ public class Main extends ApplicationAdapter {
 		});
 		redoScale();
 		Map.setupMapParser();
-		changeMap(level);		
+		changeMap(level);
+		
+		
+		
 	}
 
 	private void redoScale() {
@@ -118,22 +126,40 @@ public class Main extends ApplicationAdapter {
 		currentMap=new Map(mapNum);
 		stage.addActor(currentMap);
 	}
-
+Texture t;
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Gdx.graphics.getDeltaTime());
+		
+		
+		
 		stage.draw();
 		
-		/*batch.begin();
+		batch.begin();
 		Font.font.draw(batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 1, Gdx.graphics.getHeight());
-		batch.end();*/
+		batch.end();
 	}
 
+	
 	public void update(float delta){
-		Entity.update(delta);
+	
+		Entity.update(Main.frameSpeed);
 		ticks+=frameSpeed;
-		stage.act(delta);
+		
+		if(ticks>.3f){
+			ticks=0;
+			Fairy f = new Fairy();
+			
+			f.setStart(60, 60);
+			stage.addActor(f);
+			f.flyTo(500, 500);
+		}
+		
+		stage.act(Main.frameSpeed);
+		
+		
+		
 	}
 }

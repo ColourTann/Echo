@@ -1,13 +1,69 @@
 
 atlas_image.png
-size: 16,16
+size: 512,256
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+entity/bee
+  rotate: false
+  xy: 260, 155
+  size: 34, 15
+  orig: 34, 15
+  offset: 0, 0
+  index: -1
+entity/fairy
+  rotate: false
+  xy: 132, 68
+  size: 162, 25
+  orig: 162, 25
+  offset: 0, 0
+  index: -1
+entity/frog
+  rotate: false
+  xy: 396, 210
+  size: 68, 30
+  orig: 68, 30
+  offset: 0, 0
+  index: -1
+map/portal
+  rotate: false
+  xy: 132, 95
+  size: 156, 41
+  orig: 156, 41
+  offset: 0, 0
+  index: -1
+map/tiles
+  rotate: false
+  xy: 2, 138
+  size: 256, 32
+  orig: 256, 32
+  offset: 0, 0
+  index: -1
+particle
+  rotate: false
+  xy: 2, 8
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
 pixel
   rotate: false
-  xy: 2, 2
+  xy: 296, 169
   size: 1, 1
   orig: 1, 1
+  offset: 0, 0
+  index: -1
+player/idle
+  rotate: false
+  xy: 132, 2
+  size: 27, 64
+  orig: 27, 64
+  offset: 0, 0
+  index: -1
+player/run
+  rotate: false
+  xy: 2, 172
+  size: 392, 68
+  orig: 392, 68
   offset: 0, 0
   index: -1

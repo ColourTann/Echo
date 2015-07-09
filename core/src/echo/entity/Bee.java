@@ -27,8 +27,8 @@ public class Bee extends Entity{
 	static float noiseAmp=30;
 	static TextureRegion[] animation;
 	static{
-		Texture t= new Texture(Gdx.files.internal("entity/bee.png"));
-		animation = TextureRegion.split(t, t.getWidth()/2, t.getHeight())[0];
+		TextureRegion tr= Main.atlas.findRegion("entity/bee");
+		animation = tr.split(tr.getRegionWidth()/2, tr.getRegionHeight())[0];
 	}
 	
 	int startX, startY;

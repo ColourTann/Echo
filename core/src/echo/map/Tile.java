@@ -26,7 +26,9 @@ public class Tile extends Actor{
 	static Sound grassStep = Gdx.audio.newSound(Gdx.files.internal("sfx/grassfoot.wav"));
 	static Sound grassLand = Gdx.audio.newSound(Gdx.files.internal("sfx/grassland.wav"));
 
-	public static TextureRegion[] tilesTextures = TextureRegion.split(new Texture(Gdx.files.internal("map/tiles.png")), 32, 32)[0];
+	
+	
+	public static TextureRegion[] tilesTextures = Main.atlas.findRegion("map/tiles").split(32, 32)[0];
 	static final Color goal = Colours.make(212,240,58);
 	public static final int tileWidth=32;
 	public static final int tileHeight=16;
@@ -49,7 +51,7 @@ public class Tile extends Actor{
 		case grass:
 		case metal:
 		case snow:
-		case rock:
+		case stone:
 			collidable=true;
 		default:
 			break;
@@ -79,40 +81,9 @@ public class Tile extends Actor{
 	}
 	
 	public void step(Player p){
-		Sound s=null;
-		switch(type){
-		case background:
-			break;
-		case rock:
-			s=rockStep;
-			break;
-		case goal:
-			break;
-		case player:
-			break;
-		case snow:
-			s=snowStep;
-			break;
-		case base:
-			break;
-		case grass:
-			s=grassStep;
-			break;
-		case metal:
-			s=metalStep;
-			break;
-		case water:
-			break;
-		default:
-			break;
-
-		}
+		Sound s=type.foot[(int) (Math.random()*2)];
 		if(s==null) return;
-		
-		
 		s.play(p.multiplier, getPitch(), 0);
-		
-		
 	}
 	
 	static final float variance = .1f;
@@ -131,7 +102,7 @@ public class Tile extends Actor{
 		case base:
 			tr=tilesTextures[1];
 			break;
-		case rock:
+		case stone:
 			tr=tilesTextures[2];
 			break;
 		case grass:
@@ -181,34 +152,16 @@ public class Tile extends Actor{
 	}
 
 	public void land(Player p) {
-		Sound s=null;
+		
 		switch(type){
 		case background:
 			p.die();
 			break;
-		case rock:
-			s=rockLand;
-			break;
-		case goal:
-			break;
-		case player:
-			break;
-		case snow:
-			s=snowLand;
-			break;
-		case base:
-			break;
-		case grass:
-			s=grassLand;
-			break;
-		case metal:
-			s=metalLand;
-			break;
-		case water:
-			break;
 		default:
 			break;
 		}
+		Sound s=type.foot[(int) (Math.random()*2)];
+		if(s==null) return;
 		s.play(p.multiplier, getPitch(), 0);
 	}
 }
