@@ -83,7 +83,7 @@ public class Tile extends Actor{
 	public void step(Player p){
 		Sound s=type.foot[(int) (Math.random()*2)];
 		if(s==null) return;
-		s.play(p.multiplier, getPitch(), 0);
+		s.play(p.multiplier, 1, 0);
 	}
 	
 	static final float variance = .1f;

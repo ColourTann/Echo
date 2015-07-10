@@ -306,7 +306,7 @@ public class Player extends Entity{
 	}
 
 	private void move() {
-		if(Math.abs(dx)<=10)dx=0;
+		if(Math.abs(dx)<=25)dx=0;
 		changePosition(dx*Main.frameSpeed, dy*Main.frameSpeed);
 	}
 
@@ -324,7 +324,7 @@ public class Player extends Entity{
 		if(age>0) Colours.setBatchColour(batch, playerReplayCol, multiplier*getColor().a);
 		
 		TextureRegion toDraw=run[(int) frameTicker];
-		//if(dx==0) toDraw=idle;
+		if(dx==0) toDraw=idle;
 		
 		if(dy!=0){
 			
@@ -336,7 +336,7 @@ public class Player extends Entity{
 		
 		
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
-		Draw.draw(batch, toDraw, getX()-extraWidth, getY()-extraHeight);
+		Draw.drawCentered(batch, toDraw, getX()-extraWidth+run[0].getRegionWidth()/2, getY()-extraHeight+run[0].getRegionHeight()/2);
 		
 		//draw collider//
 //		batch.setColor(1,1,1,.5f);

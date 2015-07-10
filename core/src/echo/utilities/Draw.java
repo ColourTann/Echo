@@ -1,10 +1,14 @@
 package echo.utilities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.TextureData;
+import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -162,6 +166,24 @@ public class Draw {
 		Normal, Additive, MaxBuggy
 	}
 
+	
+	static void pixmapThing(){
+		Pixmap p = new Pixmap(64, 64, Format.RGBA8888);
+		for(int x=0;x<64;x++){
+			for(int y=0;y<64;y++){
+				float dx = 32-x;
+				float dy = 32-y;
+				float distance = (float) Math.sqrt(dx*dx+dy*dy);
+				float ratio = distance/32;
+				p.setColor(new Color(1,1,1,ratio));
+				p.drawPixel(x, y);
+			}
+		}
+		
+		PixmapIO.writePNG(new FileHandle("test.png"), p);
+		
+	}
+	
 	public static void setBlend(Batch batch, BlendType type) {
 		switch (type) {
 		case Additive:

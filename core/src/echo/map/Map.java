@@ -139,7 +139,7 @@ public class Map extends Group{
 
 		case Keys.SPACE:
 			if(victory){
-//				Main.self.changeMap((++Main.level)%13);
+				Main.self.changeMap((++Main.level)%13);
 			}
 			if(replaying){
 				resetLevel();
@@ -232,12 +232,12 @@ public class Map extends Group{
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
-//		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then actors//
 		super.draw(batch, parentAlpha);
 		//then darkness//
 		batch.setColor(getColor());
-//		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then the goal (it's currently drawing twice....)//
 		for(Entity e:entities){
 			if(e instanceof Portal){
