@@ -24,7 +24,7 @@ public class Spike extends Entity{
 	
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(1,1,1,1);
-		Draw.draw(batch,Tile.tilesTextures[7], getX(), getY());
+		Draw.draw(batch,Tile.tileTextures[7], getX(), getY());
 	}
 
 	@Override

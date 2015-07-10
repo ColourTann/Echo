@@ -30,7 +30,6 @@ public class Map extends Group{
 	TerrainType(){
 		for(int i=0;i<2;i++){
 			FileHandle f = Gdx.files.internal("sfx/"+this+"foot"+i+".wav");
-			System.out.println(f);
 			if(!f.exists()) break;
 			foot[i]=Gdx.audio.newSound(f);
 		}
@@ -52,7 +51,7 @@ public class Map extends Group{
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
-		addFairy();
+//		setColor(0,0,0,0);
 	}
 
 	private void addFairy() {
@@ -105,8 +104,16 @@ public class Map extends Group{
 				}
 			}	
 		}
+		
+		
 
 
+	}
+	
+	public void addDetails(){
+		for(Tile t:tiles){
+			t.setupTexture();
+		}
 	}
 
 	public void act(float delta){
@@ -206,8 +213,7 @@ public class Map extends Group{
 
 	private void addEntity(Entity e){
 		entities.add(e);
-		addActor(e); 
-
+//		addActor(e); 
 	}
 
 	private void setupBorders() {
@@ -232,9 +238,14 @@ public class Map extends Group{
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
+//		batch.setColor(0,0,0,1);
 		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then actors//
 		super.draw(batch, parentAlpha);
+		//then tile decals//
+		for(Tile t:tiles){
+			t.postDraw(batch);
+		}
 		//then darkness//
 		batch.setColor(getColor());
 		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
@@ -246,6 +257,8 @@ public class Map extends Group{
 		}
 		//bad tutorial code//
 
+		
+		
 		String s="";
 		if(level==0) s= "Version "+Main.version+"\nTurn your sound up!\nArrow keys to move\n";
 		if(replaying)s="Replaying\nPress space to retry";
