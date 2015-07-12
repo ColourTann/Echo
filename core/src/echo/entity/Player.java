@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import echo.Main;
 import echo.map.Tile;
+import echo.screen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 
@@ -22,11 +23,13 @@ public class Player extends Entity{
 	/*bytes*/
 	static final byte byteLeft =	 	1;
 	static final byte byteRight =	 	1<<1;
+	static final byte byteLR =	 		byteLeft|byteRight;
 	static final byte byteUp =		 	1<<2;
 	static final byte byteJumpPressed= 	1<<3;
-	static final byte byteSpace= 	1<<4;
+	static final byte byteR= 	1<<4;
 	/*sounds*/
 	static final Sound jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
+	static final Sound landSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lose.wav"));
 	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
 	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
 	/*constants*/
@@ -94,7 +97,6 @@ public class Player extends Entity{
 
 	public void act(float delta){
 		super.act(delta);
-		
 		if(!active)return;
 		if(replay&&!replaying)return;
 //		System.out.println("player: "+fn++);
@@ -111,14 +113,14 @@ public class Player extends Entity{
 		else {
 			recordInput();
 		}
-		doInput(currentByte);
-		doGravity();
-		doDrag();
-		move();
+		doInput(currentByte, delta);
+		doGravity(delta);
+		doDrag(delta);
+		move(delta);
 		checkCollisions();
 		updatePreviousPosition();
 		updateSprite();
-		admin();
+		admin(delta);
 	}
 
 	private void updateFootCollider(){
@@ -126,23 +128,21 @@ public class Player extends Entity{
 		feet.y=collider.y-1;
 	}
 	
-	private void admin() {
+	private void admin(float delta) {
 		float mult=dy==0?1:.4f;
-		
-		
-			frameTicker+=Math.abs(dx)*Main.frameSpeed*animSpd*mult;
-		
+		frameTicker+=Math.abs(dx)*delta*animSpd*mult;
 		frameTicker%=run.length;
-		jumpKindness-=Main.frameSpeed;
+		jumpKindness-=delta;
 		if(onGround){
 			float stepAmount = Math.abs(dx);
 			stepAmount=Math.min(stepAmount, 250);
-			stepper+=Math.abs(stepAmount)*Main.frameSpeed;
+			stepper+=Math.abs(stepAmount)*delta*facingSide;
 		}
 		else {
-			airTime+=Main.frameSpeed;
+			airTime+=delta;
 			stepper=0;
 		}
+		currentByte=0;
 	}
 
 	private void updateSprite() {
@@ -155,8 +155,8 @@ public class Player extends Entity{
 		prevX=collider.x; prevY=collider.y;
 	}
 
-	private void doDrag() {
-		dx*=Math.pow(drag, Main.frameSpeed);
+	private void doDrag(float delta) {
+		dx*=Math.pow(drag, delta);
 	}
 
 	public void keyDown(int keyCode){
@@ -168,12 +168,12 @@ public class Player extends Entity{
 		if(Gdx.input.isKeyPressed(Keys.LEFT)) currentByte|=byteLeft;
 		if(Gdx.input.isKeyPressed(Keys.RIGHT)) currentByte|=byteRight;
 		if(Gdx.input.isKeyPressed(Keys.UP)) currentByte|=byteUp;
-		if(Gdx.input.isKeyPressed(Keys.SPACE)) currentByte|=byteSpace;
+		if(Gdx.input.isKeyPressed(Keys.R)) currentByte|=byteR;
 	}
 
-	private void doInput(byte input) {		
+	private void doInput(byte input, float delta) {		
 		
-		if((input&byteSpace)>0){
+		if((input&byteR)>0){
 			die();
 			return;
 		}
@@ -198,9 +198,8 @@ public class Player extends Entity{
 		else{
 			jumping=false;
 		}
-		dx+=lr*horizontalAccel*Main.frameSpeed;
+		dx+=lr*horizontalAccel*delta;
 		if(!replay)inputs.add(currentByte);
-		currentByte=0;
 	}
 
 	private void faceSide(int side) {
@@ -219,7 +218,7 @@ public class Player extends Entity{
 		onGround=false;
 
 		//first tiles//	
-		for(Tile t: Main.self.currentMap.tiles){
+		for(Tile t: GameScreen.get().currentMap.tiles){
 			if(t.collider.overlaps(collider)){
 				t.collide(this);
 				/*vertical collisions*/
@@ -255,7 +254,7 @@ public class Player extends Entity{
 		}	
 		//then entities//
 		if(replay) return;
-		for(Entity e:Main.self.currentMap.entities){
+		for(Entity e:GameScreen.get().currentMap.entities){
 			if(e.collider.overlaps(collider)) collideWith(e);
 		}
 	}
@@ -292,6 +291,7 @@ public class Player extends Entity{
 
 	private void touchGround(Tile underneath) {
 		dy=0;
+		landSound.play();
 		onGround=true;
 		jumping=false;
 		jumpKindness=groundTimerNiceness;
@@ -311,15 +311,19 @@ public class Player extends Entity{
 	}
 
 	private Tile getTileUnderFeet() {
-		for(Tile t:Main.self.currentMap.tiles){
+		for(Tile t:GameScreen.get().currentMap.tiles){
 			if(t.collider.overlaps(feet))return t;
 		}
 		return null;
 	}
 
-	private void move() {
-		if(Math.abs(dx)<=25)dx=0;
-		changePosition(dx*Main.frameSpeed, dy*Main.frameSpeed);
+	private void move(float delta) {
+		if(Math.abs(dx)<=25){
+			if((currentByte&byteLR)==0){
+				dx=0;	
+			}
+		}
+		changePosition(dx*delta, dy*delta);
 	}
 
 	private void changePosition(float x, float y) {
@@ -327,8 +331,8 @@ public class Player extends Entity{
 		collider.y+=y;
 	}
 
-	private void doGravity(){
-		dy-=gravity*Main.frameSpeed;
+	private void doGravity(float delta){
+		dy-=gravity*delta;
 	}
 	static int jumpFrameThreshold=400;
 	public void draw(Batch batch, float parentAlpha){
@@ -365,13 +369,13 @@ public class Player extends Entity{
 
 	public void win() {
 		victory=true;
-		Main.self.currentMap.levelComplete();
+		GameScreen.get().currentMap.levelComplete();
 		endLife();
 	}
 
 	public void endLife(){
 		if(!replay) {
-			Main.self.currentMap.lightsOn();
+			GameScreen.get().currentMap.lightsOn();
 		}
 		replay=true;
 		active=false;
@@ -428,7 +432,7 @@ public class Player extends Entity{
 			@Override
 			public void run() {
 				reset();
-				Main.self.currentMap.finishedMovingBack();
+				GameScreen.get().currentMap.finishedMovingBack();
 			}
 		}));
 		addAction(sa);

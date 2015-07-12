@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import echo.Main;
 import echo.entity.Player;
 import echo.map.Map.TerrainType;
+import echo.screen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 
@@ -113,7 +114,7 @@ public class Tile extends Actor{
 			if(hasRoomFor2x2()){
 				for(int dx=0;dx<=1;dx++){
 					for(int dy=0;dy<=1;dy++){
-						Main.currentMap.tilesArray[x+dx][y+dy].decalBlock=true;
+						GameScreen.get().currentMap.tilesArray[x+dx][y+dy].decalBlock=true;
 					}
 				}
 				return decals[2];
@@ -129,7 +130,7 @@ public class Tile extends Actor{
 				int newX=x+dx; int newY=y+dy;
 				if(newX<0||newX>=Main.tilesAcross||
 						newY<0||newY>=Main.tilesDown)return false;
-				Tile t =Main.currentMap.tilesArray[newX][newY];
+				Tile t =GameScreen.get().currentMap.tilesArray[newX][newY];
 				if(t==null) return false;
 				if(t.type!=TerrainType.base) return false;
 				if(t.decalBlock) return false;
@@ -153,10 +154,10 @@ public class Tile extends Actor{
 		if(checkX>=Main.tilesAcross||checkY>=Main.tilesDown) return false;
 
 		//no tile there
-		if(Main.self.currentMap.tilesArray[checkX][checkY]==null) return false;
+		if(GameScreen.get().currentMap.tilesArray[checkX][checkY]==null) return false;
 
 		//only an inner edge if the tile in that direction is collidable
-		return Main.self.currentMap.tilesArray[checkX][checkY].collidable;
+		return GameScreen.get().currentMap.tilesArray[checkX][checkY].collidable;
 	}
 
 	public void step(Player p){

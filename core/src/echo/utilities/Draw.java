@@ -79,6 +79,10 @@ public class Draw {
 	public static void draw(Batch batch, TextureRegion t, float x, float y) {
 		drawRotatedScaled(batch, t, x, y, 1, 1, 0);
 	}
+	
+
+	
+	
 
 	public static void drawScaled(Batch batch, TextureRegion t, float x,
 			float y, float scaleX, float scaleY) {

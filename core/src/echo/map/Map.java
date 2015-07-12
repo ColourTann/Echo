@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
@@ -23,11 +24,14 @@ import echo.entity.Portal;
 import echo.entity.Player;
 import echo.entity.Bee.Direction;
 import echo.entity.Spike;
+import echo.screen.GameScreen;
+import echo.utilities.ButtonBorder;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Font;
 
 public class Map extends Group{
+	public enum MapState{Waiting, Playing, Replaying, Victory};
 	static float fairyTimer=4;
 	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
 	Sound[] foot = new Sound[2];
@@ -214,13 +218,16 @@ public class Map extends Group{
 				resetLevel();
 			}
 			break;
+		case Keys.R:
+			
+			break;
 		}
 		currentPlayer.keyDown(keyCode);
 	}
 
 	boolean transitioning;
 	private void transition() {
-		Main.self.zoomInto(portal.getX(Align.center), portal.getY(Align.center));
+		GameScreen.get().zoomInto(portal.getX(Align.center), portal.getY(Align.center));
 		transitioning=true;
 	}
 
@@ -228,6 +235,7 @@ public class Map extends Group{
 
 	boolean replaying;
 	private void resetLevel(){
+		GameScreen.get().setState(MapState.Waiting);
 		replaying=false;
 		ready=true;
 		makePlayer();
@@ -247,6 +255,7 @@ public class Map extends Group{
 	}
 
 	private void begin() {
+		GameScreen.get().setState(MapState.Playing);
 		ready=false;
 		resetEntities();
 		currentPlayer.activate();
@@ -260,6 +269,7 @@ public class Map extends Group{
 	}
 
 	private void makePlayer() {
+		System.out.println("make");
 		if(currentPlayer!=null){
 			if(!currentPlayer.replay){
 				currentPlayer.reset();
@@ -305,10 +315,11 @@ public class Map extends Group{
 	}
 
 
+	static TextureRegion background = Main.atlas.findRegion("map/background");
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
-		batch.setColor(Colours.arachGround);
-		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+		batch.setColor(1,1,1,1);
+		Draw.draw(batch, background, 0, 0);
 		//then actors//
 		super.draw(batch, parentAlpha);
 		//then tile decals//
@@ -323,13 +334,6 @@ public class Map extends Group{
 
 		batch.setColor(getColor());
 		Draw.draw(batch, Draw.getBuffer().getColorBufferTexture(), 0, 0);
-
-		String s="";
-		if(level==0) s= "Version "+Main.version+"\nTurn your sound up!\nArrow keys to move\n";
-		if(replaying)s="Replaying\nPress space to retry";
-		if(victory) s="Congratulations! Press space to continue";
-		Font.font.draw(batch, s, 10, Main.height-10);
-		
 	}
 
 
@@ -347,6 +351,7 @@ public class Map extends Group{
 	}
 
 	public void showAllReplays(){
+		GameScreen.get().setState(currentPlayer.victory?MapState.Victory:MapState.Replaying);
 		replaying=true;
 		resetEntities();
 		for(Player p:deadPlayers){

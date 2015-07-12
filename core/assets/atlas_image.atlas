@@ -1,82 +1,117 @@
 
 atlas_image.png
-size: 512,256
+size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 entity/bee
   rotate: false
-  xy: 2, 2
+  xy: 602, 173
   size: 34, 15
   orig: 34, 15
   offset: 0, 0
   index: -1
 entity/fairy
   rotate: false
-  xy: 132, 79
+  xy: 602, 190
   size: 162, 25
   orig: 162, 25
   offset: 0, 0
   index: -1
 entity/frog
   rotate: false
-  xy: 324, 151
+  xy: 324, 116
   size: 68, 30
   orig: 68, 30
   offset: 0, 0
   index: -1
+entity/portal
+  rotate: false
+  xy: 404, 164
+  size: 196, 51
+  orig: 196, 51
+  offset: 0, 0
+  index: -1
+interface/corner
+  rotate: false
+  xy: 160, 83
+  size: 29, 29
+  orig: 29, 29
+  offset: 0, 0
+  index: -1
+interface/edge
+  rotate: false
+  xy: 766, 211
+  size: 1, 4
+  orig: 1, 4
+  offset: 0, 0
+  index: -1
+interface/frill
+  rotate: false
+  xy: 404, 155
+  size: 31, 7
+  orig: 31, 7
+  offset: 0, 0
+  index: -1
+map/background
+  rotate: false
+  xy: 2, 217
+  size: 800, 640
+  orig: 800, 640
+  offset: 0, 0
+  index: -1
 map/portal
   rotate: false
-  xy: 132, 106
+  xy: 2, 71
   size: 156, 41
   orig: 156, 41
   offset: 0, 0
   index: -1
 map/tiles
   rotate: false
-  xy: 2, 149
+  xy: 2, 114
   size: 320, 32
   orig: 320, 32
   offset: 0, 0
   index: -1
 mask
   rotate: false
-  xy: 404, 186
+  xy: 804, 663
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 normalmask
   rotate: false
-  xy: 132, 13
+  xy: 934, 793
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 particle
   rotate: false
-  xy: 2, 19
+  xy: 804, 729
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 pixel
   rotate: false
-  xy: 290, 146
+  xy: 804, 660
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 player/idle
   rotate: false
-  xy: 470, 183
+  xy: 2, 2
   size: 27, 67
   orig: 27, 67
   offset: 0, 0
   index: -1
 player/run
   rotate: false
-  xy: 2, 183
+  xy: 2, 148
   size: 400, 67
   orig: 400, 67
   offset: 0, 0
