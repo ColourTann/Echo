@@ -1,6 +1,7 @@
 package echo.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
@@ -29,5 +30,17 @@ public abstract class Entity extends Actor{
 	public void drawCollider(Batch batch){
 		batch.setColor(1,1,1,.5f);
 		Draw.fillRectangle(batch, collider.x, collider.y, collider.width, collider.height);
+	}
+	public abstract void drawLights(Batch batch);
+	
+	private static AtlasRegion mask;
+	public static AtlasRegion getMask(){
+		if(mask==null)mask = Main.atlas.findRegion("normalmask");
+		return mask;
+	}
+	private static AtlasRegion reverseMask;
+	public static AtlasRegion getReverseMask(){
+		if(mask==null)mask = Main.atlas.findRegion("mask");
+		return mask;
 	}
 }

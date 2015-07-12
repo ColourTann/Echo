@@ -22,8 +22,9 @@ public class Player extends Entity{
 	/*bytes*/
 	static final byte byteLeft =	 	1;
 	static final byte byteRight =	 	1<<1;
-	static final byte upByte =		 	1<<2;
+	static final byte byteUp =		 	1<<2;
 	static final byte byteJumpPressed= 	1<<3;
+	static final byte byteSpace= 	1<<4;
 	/*sounds*/
 	static final Sound jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
 	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
@@ -77,7 +78,7 @@ public class Player extends Entity{
 	/*state flags*/
 	public boolean replay; //if the player has died or won and is now a replayer//
 	public boolean replaying; //if currently replaying self//
-	boolean active; //if should be moving/accepting input/
+	public boolean active; //if should be moving/accepting input/
 	public boolean victory; //if this player reached the goal//
 	int age; //how many plays ago//
 	public float multiplier=1; //determines alpha and volume for sound effects//
@@ -166,10 +167,17 @@ public class Player extends Entity{
 	private void recordInput(){
 		if(Gdx.input.isKeyPressed(Keys.LEFT)) currentByte|=byteLeft;
 		if(Gdx.input.isKeyPressed(Keys.RIGHT)) currentByte|=byteRight;
-		if(Gdx.input.isKeyPressed(Keys.UP)) currentByte|=upByte;
+		if(Gdx.input.isKeyPressed(Keys.UP)) currentByte|=byteUp;
+		if(Gdx.input.isKeyPressed(Keys.SPACE)) currentByte|=byteSpace;
 	}
 
 	private void doInput(byte input) {		
+		
+		if((input&byteSpace)>0){
+			die();
+			return;
+		}
+		
 		float lr=0;
 		if((input&byteLeft)>0){
 			faceSide(-1);
@@ -180,7 +188,7 @@ public class Player extends Entity{
 			lr+=1;
 		}
 		if((input&byteJumpPressed)>0) jump();
-		if((input&upByte)>0){
+		if((input&byteUp)>0){
 			if(jumping){
 				if(airTime<maxJumpTime){
 					dy=jumpStrength;
@@ -253,6 +261,10 @@ public class Player extends Entity{
 	}
 	
 	public void collideWith(Entity e){
+		if(e==null){
+			die();
+			return;
+		}
 		CollisionResult cr =e.collideWithPlayer(this);
 		if(cr==null)return;
 		switch(cr){
@@ -461,5 +473,9 @@ public class Player extends Entity{
 
 	@Override
 	public void begin() {
+	}
+
+	@Override
+	public void drawLights(Batch batch) {
 	}
 }

@@ -31,4 +31,8 @@ public class Spike extends Entity{
 	public void begin() {
 	}
 
+	@Override
+	public void drawLights(Batch batch) {
+	}
+
 }

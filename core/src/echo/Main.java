@@ -21,7 +21,9 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.maps.tiled.TiledMapTile.BlendMode;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -36,7 +38,7 @@ import echo.utilities.Draw.BlendType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.2f;
+	public static final float version = 0.3f;
 	public static final float frameSpeed = 1/60f;
 	static final int scale=1;
 	public static int tilesAcross=25;
@@ -45,14 +47,14 @@ public class Main extends ApplicationAdapter {
 	public static final int height=scale*tilesDown*Tile.tileHeight;
 
 	public static TextureAtlas atlas;
-	SpriteBatch batch;
+	SpriteBatch stageBatch;
 	Stage stage;
 	OrthographicCamera cam;
 
 	public static Main self;
 	public static Map currentMap;
 	public static double ticks;
-	public static int level=6;
+	public static int level=0;
 	@Override
 	public void create () {
 		self=this;
@@ -60,7 +62,7 @@ public class Main extends ApplicationAdapter {
 		cam = new OrthographicCamera();
 		Viewport v = new ScreenViewport(cam);
 		stage = new Stage(v);
-		batch=(SpriteBatch) stage.getBatch();
+		stageBatch=(SpriteBatch) stage.getBatch();
 		Gdx.input.setInputProcessor(new InputProcessor() {
 			@Override
 			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
@@ -117,9 +119,10 @@ public class Main extends ApplicationAdapter {
 		redoScale();
 		Map.setupMapParser();
 		changeMap(level);
+		currentMap.finishedZooming();
 		
-		mask = Main.atlas.findRegion("normalmask");
-		buffer = new FrameBuffer(Format.RGBA8888, width, height, false);
+		
+
 		//		setupBuffer();
 		//		Pixmap p = new Pixmap(64, 64, Format.RGBA8888);
 		//		for(int x=0;x<64;x++){
@@ -137,8 +140,8 @@ public class Main extends ApplicationAdapter {
 		
 	}
 
-	AtlasRegion mask;
-	public static FrameBuffer buffer;
+	
+
 
 
 	private void redoScale() {
@@ -154,34 +157,7 @@ public class Main extends ApplicationAdapter {
 		currentMap.addDetails();
 		stage.addActor(currentMap);
 	}
-	private void setupBuffer(){
-
-		buffer.bind();
-		buffer.begin();
-		batch.begin();
-		batch.setColor(0,0,0,1);
-		Draw.fillRectangle(batch, 0, 0, width, height);
-		
-		batch.flush();
-		batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
-		Gdx.gl20.glBlendEquation(GL30.GL_FUNC_REVERSE_SUBTRACT);
-		batch.flush();
-		batch.setColor(0,0,0,1);
-		for(Fairy f:fairies){
-			if(!f.dead){
-				Draw.drawCenteredScaled(batch, mask, f.getX(), height-f.getY(),3,3);
-			}
-		}
-
-		batch.flush();
-		batch.end();
-		buffer.end();
-		buffer.unbind();
-		batch.setBlendFunction(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
-		Gdx.gl20.glBlendEquation(GL30.GL_FUNC_ADD);
-		batch.flush();
-
-	}
+	
 
 	@Override
 	public void render () {
@@ -190,34 +166,85 @@ public class Main extends ApplicationAdapter {
 		update(Gdx.graphics.getDeltaTime());
 
 
+		stage.draw();
 
-				stage.draw();
+//		stageBatch.begin();
+//		stageBatch.setColor(1,1,1,1);
+//		
+//		Font.font.draw(stageBatch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 1, Gdx.graphics.getHeight());
+//		stageBatch.end();
+	}
 
-		batch.begin();
-//		Draw.draw(batch, buffer.getColorBufferTexture(), 0, 0);
-		Font.font.draw(batch, "FPS: "+Gdx.graphics.getFramesPerSecond(), 1, Gdx.graphics.getHeight());
-		batch.end();
+	
+
+
+	public void update(float delta){
+		tickCam(delta);
+		Entity.update(Main.frameSpeed);
+		stage.act(Main.frameSpeed);
 	}
 
 
-	ArrayList<Fairy> fairies = new ArrayList<Fairy>();
-	public void update(float delta){
-//		setupBuffer();
-		Entity.update(Main.frameSpeed);
-		ticks+=frameSpeed;
 
-//		if(ticks>.3f){
-//			ticks=0;
-//			Fairy f = new Fairy();
-//			fairies.add(f);
-//			f.setStart(60, 60);
-//			stage.addActor(f);
-//			f.flyTo(500, 500);
-//		}
+	float startCamX, targetCamX, startCamY, targetCamY, startCamZoom, targetCamZoom, camTicker;
+	boolean zooming;
+	
+	static Interpolation zoomInTerp = new Interpolation.PowOut(3);
+	static Interpolation zoomOutTerp = new Interpolation.PowOut(3);
+	
+	
+	static Interpolation zoomTerp;
+	boolean in;
+	public void zoomInto(float x, float y) {
+		startCamX=cam.position.x; startCamY=cam.position.y; startCamZoom=cam.zoom;
+		targetCamX=x; targetCamY=y;
+		targetCamZoom=.01f;
+		camTicker=0;
+		zooming=true;
+		zoomTerp=zoomInTerp;
+		in=true;
+	}
+	
+	public void zoomOut(float fromX, float fromY){
+		startCamX=fromX; startCamY=fromY; startCamZoom=cam.zoom;
+		targetCamX=Main.width/2; targetCamY=Main.height/2;
+		targetCamZoom=1f;
+		camTicker=0;
+		zooming=true;
+		zoomTerp=zoomOutTerp;
+		in=false;
+	}
+	
+	
+	public void tickCam(float delta){
+		if(!zooming)return;
+		
+		camTicker+=delta;
+		if(camTicker>1){
+			zooming=false;
+			camTicker=1;
+			if(in){
+				nextLevel();
+				zoomOut(Main.currentMap.portal.getX(Align.center), Main.currentMap.portal.getY(Align.center));
+			}
+			else{
+				currentMap.finishedZooming();
+			}
+		}
+		
+		float factor = zoomTerp.apply(camTicker);
+		
+		cam.position.x=startCamX+(targetCamX-startCamX)*factor;
+		cam.position.y=startCamY+(targetCamY-startCamY)*factor;
+		cam.zoom=startCamZoom+(targetCamZoom-startCamZoom)*factor;
+		cam.update();
+	}
 
-		stage.act(Main.frameSpeed);
 
 
 
+
+	public static void nextLevel() {
+		Main.self.changeMap((++Main.level)%13);
 	}
 }

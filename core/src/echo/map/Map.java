@@ -7,10 +7,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Align;
 
 import echo.Main;
 import echo.entity.Bee;
@@ -25,6 +28,7 @@ import echo.utilities.Draw;
 import echo.utilities.Font;
 
 public class Map extends Group{
+	static float fairyTimer=4;
 	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
 	Sound[] foot = new Sound[2];
 	TerrainType(){
@@ -45,20 +49,49 @@ public class Map extends Group{
 	int level;
 	public Player currentPlayer;
 	public boolean ready=true;
+	public Portal portal;
+	float fairyTicks;
 	public Map(int levelNum) {		
 		this.level=levelNum;
 		loadMap(levelNum+"");
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
-//		setColor(0,0,0,0);
+		//		setColor(0,0,0,0);
 	}
 
-	private void addFairy() {
-		Fairy f = Fairy.get();
-		f.setStart(10, 10);
+	public void addFairy() {
+		float tx = portal.getX()+portal.getWidth()/2;
+		float ty = portal.getY()+portal.getHeight()/2;
+		float sx, sy;
+
+		float amountOffscreen=300;
+		double rand = Math.random();
+
+		float offScreenX= tx>Main.width/2?-amountOffscreen:Main.width+amountOffscreen;
+		float offScreenY= ty>Main.height/2?-amountOffscreen:Main.height+amountOffscreen;
+
+
+
+		if(Math.random()<.3){
+			sx=offScreenX;
+			sy = (float) (Math.random()/2*Main.height/2)+Main.height/4;
+		}
+
+		else if( rand < .6){
+			sy=offScreenY;
+			sx = (float) (Math.random()*Main.width/2)+Main.width/4;
+		}		
+		else{
+			sx=offScreenX;
+			sy=offScreenY;
+		}
+		Fairy f = new Fairy();
+		f.setStart(sx, sy);
+		f.flyTo(tx, ty);
+
 		addEntity(f);
-		f.flyTo(700, 700);
+
 	}
 
 	private void loadMap(String string) {
@@ -72,7 +105,8 @@ public class Map extends Group{
 				case background:
 					break;
 				case goal:
-					addEntity(new Portal(x, location));
+					portal = new Portal(x, location);
+					addEntity(portal);
 					break;
 				case base:
 				case stone:
@@ -104,19 +138,46 @@ public class Map extends Group{
 				}
 			}	
 		}
-		
-		
+
+
 
 
 	}
-	
+
 	public void addDetails(){
 		for(Tile t:tiles){
 			t.setupTexture();
 		}
 	}
 
+
+
+	private void lightsIntoBuffer(Batch batch){
+		Draw.beginBuffer(batch);
+		batch.setColor(0,0,0,1);
+		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+		batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
+		Gdx.gl20.glBlendEquation(GL30.GL_FUNC_REVERSE_SUBTRACT);
+		batch.setColor(0,0,0,1);
+		for(Entity e:entities){
+			e.drawLights(batch);
+		}
+		Draw.endBuffer(batch);
+		batch.setBlendFunction(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl20.glBlendEquation(GL30.GL_FUNC_ADD);
+	}
+
 	public void act(float delta){
+		if(transitioning)return;
+		if(currentPlayer.active&&!replaying){
+			fairyTicks-=delta;
+			if(fairyTicks<=0){
+				addFairy();
+				fairyTicks=(float) (Math.random()*fairyTimer);
+			}
+		}
+
+
 		super.act(delta);
 	}
 
@@ -130,6 +191,7 @@ public class Map extends Group{
 	boolean victory;
 
 	public void keyDown(int keyCode){
+		if(transitioning||!finishedZooming) return;
 		switch(keyCode){
 		case Keys.HOME:
 			lightsOn(); // cheeeats //
@@ -146,7 +208,7 @@ public class Map extends Group{
 
 		case Keys.SPACE:
 			if(victory){
-				Main.self.changeMap((++Main.level)%13);
+				transition();
 			}
 			if(replaying){
 				resetLevel();
@@ -155,6 +217,14 @@ public class Map extends Group{
 		}
 		currentPlayer.keyDown(keyCode);
 	}
+
+	boolean transitioning;
+	private void transition() {
+		Main.self.zoomInto(portal.getX(Align.center), portal.getY(Align.center));
+		transitioning=true;
+	}
+
+
 
 	boolean replaying;
 	private void resetLevel(){
@@ -213,7 +283,7 @@ public class Map extends Group{
 
 	private void addEntity(Entity e){
 		entities.add(e);
-//		addActor(e); 
+		addActor(e); 
 	}
 
 	private void setupBorders() {
@@ -238,7 +308,6 @@ public class Map extends Group{
 	public void draw(Batch batch, float parentAlpha){
 		//first background//
 		batch.setColor(Colours.arachGround);
-//		batch.setColor(0,0,0,1);
 		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
 		//then actors//
 		super.draw(batch, parentAlpha);
@@ -247,25 +316,23 @@ public class Map extends Group{
 			t.postDraw(batch);
 		}
 		//then darkness//
-		batch.setColor(getColor());
-		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
-		//then the goal (it's currently drawing twice....)//
-		for(Entity e:entities){
-			if(e instanceof Portal){
-				e.draw(batch, parentAlpha);
-			}
-		}
-		//bad tutorial code//
+		batch.end();
+		lightsIntoBuffer(batch);
+		batch.begin();
 
-		
-		
+
+		batch.setColor(getColor());
+		Draw.draw(batch, Draw.getBuffer().getColorBufferTexture(), 0, 0);
+
 		String s="";
 		if(level==0) s= "Version "+Main.version+"\nTurn your sound up!\nArrow keys to move\n";
 		if(replaying)s="Replaying\nPress space to retry";
 		if(victory) s="Congratulations! Press space to continue";
 		Font.font.draw(batch, s, 10, Main.height-10);
-
+		
 	}
+
+
 
 
 
@@ -325,6 +392,11 @@ public class Map extends Group{
 
 	public void levelComplete() {
 		victory=true;
+	}
+
+	boolean finishedZooming;
+	public void finishedZooming() {
+		finishedZooming=true;
 	}
 
 }

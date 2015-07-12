@@ -119,4 +119,8 @@ public class Bee extends Entity{
 	public void begin() {
 		arrive();
 	}
+
+	@Override
+	public void drawLights(Batch batch) {
+	}
 }

@@ -180,6 +180,7 @@ public class Tile extends Actor{
 	}
 	
 	public void postDraw(Batch batch){
+		batch.setColor(Color.WHITE);
 		if(decal!=null){
 			Draw.draw(batch, decal, collider.x, collider.y);
 		}

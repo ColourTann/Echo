@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 
 import echo.Main;
 
@@ -161,28 +162,46 @@ public class Draw {
 		Draw.drawRotatedScaled(batch, getSq(), x, y, dist, width, radians);
 	}
 
+	
+	private static FrameBuffer buffer;
+	
+	public static FrameBuffer getBuffer(){
+		if(buffer==null)buffer=new FrameBuffer(Format.RGBA8888, Main.width, Main.height, false);
+		return buffer;
+	}
+	
+	public static void beginBuffer(Batch batch){
+		getBuffer().begin();
+		batch.begin();
+	}
+	
+	public static void endBuffer(Batch batch){
+		batch.end();
+		getBuffer().end();
+	}
+	
 	// Blending Junk
 	public enum BlendType {
 		Normal, Additive, MaxBuggy
 	}
 
 	
-	static void pixmapThing(){
-		Pixmap p = new Pixmap(64, 64, Format.RGBA8888);
-		for(int x=0;x<64;x++){
-			for(int y=0;y<64;y++){
-				float dx = 32-x;
-				float dy = 32-y;
-				float distance = (float) Math.sqrt(dx*dx+dy*dy);
-				float ratio = distance/32;
-				p.setColor(new Color(1,1,1,ratio));
-				p.drawPixel(x, y);
-			}
-		}
-		
-		PixmapIO.writePNG(new FileHandle("test.png"), p);
-		
-	}
+//	static void pixmapThing(){
+//		Pixmap p = new Pixmap(64, 64, Format.RGBA8888);
+//		for(int x=0;x<64;x++){
+//			for(int y=0;y<64;y++){
+//				float dx = 32-x;
+//				float dy = 32-y;
+//				float distance = (float) Math.sqrt(dx*dx+dy*dy);
+//				float ratio = distance/32;
+//				p.setColor(new Color(1,1,1,ratio));
+//				p.drawPixel(x, y);
+//			}
+//		}
+//		
+//		PixmapIO.writePNG(new FileHandle("test.png"), p);
+//		
+//	}
 	
 	public static void setBlend(Batch batch, BlendType type) {
 		switch (type) {
