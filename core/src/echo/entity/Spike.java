@@ -1,12 +1,14 @@
 package echo.entity;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import echo.Main;
 import echo.map.Tile;
 import echo.utilities.Draw;
 
 public class Spike extends Entity{
-
+	TextureRegion tr= Main.atlas.findRegion("entity/spike");
 	public Spike(int x, int y) {
 		setSize(Tile.tileWidth, Tile.visibleHeight);
 		setPosition(x*Tile.tileWidth, y*Tile.tileHeight);
@@ -24,7 +26,7 @@ public class Spike extends Entity{
 	
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(1,1,1,1);
-		Draw.draw(batch,Tile.tileTextures[7], getX(), getY());
+		Draw.draw(batch,tr, getX(), getY());
 	}
 
 	@Override

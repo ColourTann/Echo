@@ -32,9 +32,16 @@ entity/portal
   orig: 196, 51
   offset: 0, 0
   index: -1
+entity/spike
+  rotate: false
+  xy: 160, 80
+  size: 32, 32
+  orig: 32, 32
+  offset: 0, 0
+  index: -1
 interface/corner
   rotate: false
-  xy: 160, 83
+  xy: 804, 632
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
@@ -97,7 +104,7 @@ particle
   index: -1
 pixel
   rotate: false
-  xy: 804, 660
+  xy: 870, 726
   size: 1, 1
   orig: 1, 1
   offset: 0, 0

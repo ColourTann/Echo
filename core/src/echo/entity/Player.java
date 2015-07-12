@@ -29,7 +29,7 @@ public class Player extends Entity{
 	static final byte byteR= 	1<<4;
 	/*sounds*/
 	static final Sound jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
-	static final Sound landSound = Gdx.audio.newSound(Gdx.files.internal("sfx/lose.wav"));
+	static final Sound landSound = Gdx.audio.newSound(Gdx.files.internal("sfx/land.wav"));
 	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
 	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
 	/*constants*/
@@ -136,7 +136,7 @@ public class Player extends Entity{
 		if(onGround){
 			float stepAmount = Math.abs(dx);
 			stepAmount=Math.min(stepAmount, 250);
-			stepper+=Math.abs(stepAmount)*delta*facingSide;
+			stepper+=Math.abs(stepAmount)*delta;
 		}
 		else {
 			airTime+=delta;
@@ -291,7 +291,7 @@ public class Player extends Entity{
 
 	private void touchGround(Tile underneath) {
 		dy=0;
-		landSound.play();
+		
 		onGround=true;
 		jumping=false;
 		jumpKindness=groundTimerNiceness;
@@ -302,6 +302,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
+			landSound.play();
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){

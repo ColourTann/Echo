@@ -269,7 +269,6 @@ public class Map extends Group{
 	}
 
 	private void makePlayer() {
-		System.out.println("make");
 		if(currentPlayer!=null){
 			if(!currentPlayer.replay){
 				currentPlayer.reset();

@@ -56,7 +56,7 @@ public class Main extends Game {
 	public static Main self;
 	
 	public static double ticks;
-	public static int level=0;
+
 	
 
 	
