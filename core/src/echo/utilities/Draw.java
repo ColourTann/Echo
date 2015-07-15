@@ -170,7 +170,7 @@ public class Draw {
 	private static FrameBuffer buffer;
 	
 	public static FrameBuffer getBuffer(){
-		if(buffer==null)buffer=new FrameBuffer(Format.RGBA8888, Main.width, Main.height, false);
+		if(buffer==null)buffer=new FrameBuffer(Format.RGBA8888, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), false);
 		return buffer;
 	}
 	

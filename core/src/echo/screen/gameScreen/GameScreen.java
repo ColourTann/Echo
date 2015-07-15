@@ -1,12 +1,20 @@
-package echo.screen;
+package echo.screen.gameScreen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AddAction;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -16,7 +24,7 @@ import echo.map.Map;
 import echo.map.Map.MapState;
 import echo.utilities.TextRegion;
 
-public class GameScreen implements AdvancedScreen{
+public class GameScreen implements Screen{
 	public static TextRegion topPanel;
 	private static GameScreen self;
 	public static GameScreen get(){
@@ -27,17 +35,12 @@ public class GameScreen implements AdvancedScreen{
 		return self;
 	}
 	
-	
-	
-	
-
-
-
 	public static int level=0;
 	SpriteBatch stageBatch;
 	Stage stage;
 	OrthographicCamera cam;
 	public Map currentMap;
+	Group fairyHelp;
 	private GameScreen() {
 	}
 	
@@ -46,17 +49,64 @@ public class GameScreen implements AdvancedScreen{
 		Viewport v = new ScreenViewport(cam);
 		stage = new Stage(v);
 		stageBatch=(SpriteBatch) stage.getBatch();
-		cam.zoom=1/Main.scale;
-		cam.update();
 		
-		topPanel=new TextRegion(0, 0, 170, "");
 		
+		topPanel=new TextRegion("", 0, 0, 170);
+		setupFairyHelp();
 		changeMap(level);
 		currentMap.finishedZooming();
 		stage.addActor(currentMap);
 		
 		stage.addActor(topPanel);
 		setState(MapState.Waiting);
+		Gdx.input.setInputProcessor(stage);
+		stage.addListener(new InputListener(){
+			  @Override
+		         public boolean keyDown(InputEvent event, int keyCode){
+				  switch(keyCode){
+				  case Keys.H:
+					  showFairyHelp();
+					  break;
+				  }
+		           currentMap.keyDown(keyCode);
+		            return true;
+		         }
+			
+		});
+		
+	}
+	
+	private void setupFairyHelp(){
+		fairyHelp=new Group();
+		fairyHelp = new TextRegion("The fairies offer their assistance", Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()-fairyHelp.getHeight(), 300);
+		TextRegion accept = new TextRegion("Accept", 0, -fairyHelp.getHeight(), 150);
+		TextRegion decline = new TextRegion("Decline", 150, -fairyHelp.getHeight(), 150);
+		fairyHelp.addActor(accept);
+		fairyHelp.addActor(decline);
+		decline.setClickAction(new Runnable() {
+			@Override
+			public void run() {
+				hideFairyHelp();
+			}
+		});
+		accept.setClickAction(new Runnable() {
+			@Override
+			public void run() {
+				hideFairyHelp();
+				currentMap.requestHelp();
+			}
+		});
+	}
+	
+	
+	
+	public void showFairyHelp(){
+		fairyHelp.addAction(Actions.moveTo(fairyHelp.getX(), Gdx.graphics.getHeight()-fairyHelp.getHeight(), .3f, Interpolation.pow2Out));
+		stage.addActor(fairyHelp);
+	}
+	
+	public void hideFairyHelp(){
+		fairyHelp.addAction(Actions.moveTo(fairyHelp.getX(), Gdx.graphics.getHeight()+fairyHelp.getHeight(), .3f, Interpolation.pow2Out));
 	}
 	
 	public void setPanelText(String text){
@@ -69,7 +119,7 @@ public class GameScreen implements AdvancedScreen{
 		switch(state){
 		case Playing:
 		case Waiting:
-			if(level==0)setPanelText("Level 1\nTurn your sound up!\nArrow keys to move");
+			if(level==0)setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nArrow keys to move");
 			else setPanelText("Level "+(level+1));
 			break;
 		case Replaying:
@@ -138,7 +188,7 @@ public class GameScreen implements AdvancedScreen{
 
 	public void zoomOut(float fromX, float fromY){
 		startCamX=fromX; startCamY=fromY; startCamZoom=cam.zoom;
-		targetCamX=Main.width/2; targetCamY=Main.height/2;
+		targetCamX=Gdx.graphics.getWidth()/2; targetCamY=Gdx.graphics.getHeight()/2;
 		targetCamZoom=1f;
 		camTicker=0;
 		zooming=true;
@@ -157,6 +207,7 @@ public class GameScreen implements AdvancedScreen{
 
 	@Override
 	public void render(float delta) {
+		update(delta);
 		stage.draw();
 	}
 
@@ -181,15 +232,13 @@ public class GameScreen implements AdvancedScreen{
 	}
 
 
-	@Override
-	public void keyDown(int keyCode) {
-		currentMap.keyDown(keyCode);
-	}
-
+	
 
 	public static void setup() {
 		self=new GameScreen();
 	}
+
+
 
 
 

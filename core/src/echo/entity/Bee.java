@@ -123,4 +123,14 @@ public class Bee extends Entity{
 	@Override
 	public void drawLights(Batch batch) {
 	}
+
+	@Override
+	public boolean checkCollision(Player p) {
+		return false;
+	}
+
+	@Override
+	public CollisionResult handCollision(Player p) {
+		return CollisionResult.Death;
+	}
 }

@@ -34,21 +34,18 @@ import echo.entity.Fairy;
 import echo.entity.Player;
 import echo.map.Map;
 import echo.map.Tile;
-import echo.screen.AdvancedScreen;
-import echo.screen.GameScreen;
+import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Draw;
 import echo.utilities.Font;
 import echo.utilities.Draw.BlendType;
 
 
 public class Main extends Game {
-	public static final float version = 0.3f;
+	public static final float version = 0.5f;
 	public static final float frameSpeed = 1/60f;
-	public static final int scale=1;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
-	public static final int width=scale*tilesAcross*Tile.tileWidth;
-	public static final int height=scale*tilesDown*Tile.tileHeight;
+
 
 	public static TextureAtlas atlas;
 
@@ -64,62 +61,15 @@ public class Main extends Game {
 	public void create () {
 		self=this;
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"));
-		
-		Gdx.input.setInputProcessor(new InputProcessor() {
-			@Override
-			public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-				return false;
-			}
-
-			@Override
-			public boolean touchDragged(int screenX, int screenY, int pointer) {
-				return false;
-			}
-
-			@Override
-			public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-				return false;
-			}
-
-			@Override
-			public boolean scrolled(int amount) {
-				return false;
-			}
-
-			@Override
-			public boolean mouseMoved(int screenX, int screenY) {
-				return false;
-			}
-
-			@Override
-			public boolean keyUp(int keycode) {
-				return false;
-			}
-
-			@Override
-			public boolean keyTyped(char character) {
-				return false;
-			}
-
-			@Override
-			public boolean keyDown(int keycode) {
-				getScreen().keyDown(keycode);
-				return true;
-			}
-		});
-		redoScale();
 		Map.setupMapParser();
 		setScreen(GameScreen.get());
-		
 	}
 
 	
 
 
 
-	private void redoScale() {
-		Gdx.graphics.setDisplayMode((int)(Main.width*scale), (int) (Main.height*scale), false);
-	}
+	
 
 
 	@Override
@@ -133,14 +83,10 @@ public class Main extends Game {
 
 	public void update(float delta){
 		ticks+=Gdx.graphics.getDeltaTime();
-		getScreen().update(delta);
 		Entity.update(delta);
-
 	}
 	
-	public AdvancedScreen getScreen(){
-		return (AdvancedScreen) super.getScreen();
-	}
+	
 
 
 

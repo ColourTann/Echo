@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import echo.Main;
+import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Draw;
 import echo.utilities.Font;
 import echo.utilities.Noise;
@@ -30,7 +31,6 @@ public class Fairy extends Entity{
 	public void setStart(float x, float y){
 		startX=x; startY=y;
 		noiseOffset=(float) (Math.random()*1000);
-		//		reset();
 		setPosition(x, y);		
 		setupCollider();
 	}
@@ -80,7 +80,18 @@ public class Fairy extends Entity{
 	boolean fading;
 	private void fade() {
 		fading=true;
-		addAction(Actions.fadeOut(.2f));
+		addAction(Actions.sequence(Actions.fadeOut(.2f), Actions.run(new Runnable() {
+			
+			@Override
+			public void run() {
+				kill();
+			}
+		})));
+	}
+
+
+	protected void kill() {
+		GameScreen.get().currentMap.killEntity(this);
 	}
 
 
@@ -93,12 +104,7 @@ public class Fairy extends Entity{
 	public boolean dead;
 	@Override
 	public void reset() {
-		dead=true;
-		clearActions();
-		noiseOffset=(float) (Math.random()*1000);
-		distancePart=0;
-		remove();
-		//		flying=false;
+	
 	}
 
 	@Override
@@ -115,9 +121,21 @@ public class Fairy extends Entity{
 
 	@Override
 	public void drawLights(Batch batch) {
-		if(dead)return;
 		batch.setColor(getColor());
-		Draw.drawCenteredScaled(batch, getMask(), getX(), Main.height-getY(),1.5f,1.5f);
+		float scale = GameScreen.get().currentMap.helpRequested?7:1.5f;
+		Draw.drawCenteredScaled(batch, getMask(), getX(), Gdx.graphics.getHeight()-getY(),scale, scale);
+	}
+
+
+	@Override
+	public boolean checkCollision(Player p) {
+		return false;
+	}
+
+
+	@Override
+	public CollisionResult handCollision(Player p) {
+		return null;
 	}
 
 

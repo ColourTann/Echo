@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Align;
 
 import echo.Main;
 import echo.map.Tile;
@@ -19,7 +20,7 @@ import echo.utilities.Draw.BlendType;
 
 
 public class Portal extends Entity{
-	static final Sound punched = Gdx.audio.newSound(Gdx.files.internal("sfx/frogpunched.wav"));
+	
 	static final float animationSpeed=6;
 	static TextureRegion[] animation;
 	static{
@@ -28,19 +29,18 @@ public class Portal extends Entity{
 	}
 	
 	public Portal(int x, int y){
-		setSize(animation[0].getRegionWidth(), animation[0].getRegionHeight());
+		setSize(Tile.tileWidth, animation[0].getRegionHeight());
 		setPosition(x*Tile.tileWidth, y*Tile.tileHeight-Player.extraHeight);
 		setupCollider();
 	}
 	
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(1,1,1,1);
-		Draw.draw(batch, animation[(int) (ticker*animationSpeed)%animation.length], getX(), getY());
+		Draw.drawCentered(batch, animation[(int) (ticker*animationSpeed)%animation.length], getX()+getWidth()/2, getY()+getHeight()/2);
 	}
 
 	@Override
 	public CollisionResult collideWithPlayer(Player p) {
-		punched.play();
 		return CollisionResult.Glory;
 	}
 
@@ -56,7 +56,17 @@ public class Portal extends Entity{
 	
 	@Override
 	public void drawLights(Batch batch) {
-		 Draw.drawCenteredScaled(batch, getMask(), getX()+getWidth()/2, Main.height-getY()-getHeight()/2,1,1);
+		 Draw.drawCenteredScaled(batch, getMask(), getX()+getWidth()/2, Gdx.graphics.getHeight()-getY()-getHeight()/2,1,1);
+	}
+
+	@Override
+	public boolean checkCollision(Player p) {
+		return false;
+	}
+
+	@Override
+	public CollisionResult handCollision(Player p) {
+		return CollisionResult.Glory;
 	}
 
 

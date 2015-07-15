@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import echo.Main;
 import echo.map.Tile;
-import echo.screen.GameScreen;
+import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 
@@ -64,7 +64,7 @@ public class Player extends Entity{
 	ArrayList<Byte> inputs = new ArrayList<Byte>();
 	/*positioning*/
 	int startX,startY;
-	Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
+	public Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
 	
 	static final int feetWidth=(int) (rectWidth*.1f);
 	static final int feetHeight=1;
@@ -87,7 +87,7 @@ public class Player extends Entity{
 	public float multiplier=1; //determines alpha and volume for sound effects//
 	int id=0;
 	int fn;
-	Entity finalCollision;
+	CollisionHandler finalCollision;
 	public Player(int x, int y) {
 		startX=x*Tile.tileWidth; startY=y*Tile.tileHeight;
 		reset();
@@ -104,7 +104,7 @@ public class Player extends Entity{
 
 		if(replay){
 			if(inputIndex==inputs.size()){
-				collideWith(finalCollision);
+				handleCollision(finalCollision);
 				return;
 			}
 			currentByte=inputs.get(inputIndex);
@@ -219,8 +219,8 @@ public class Player extends Entity{
 
 		//first tiles//	
 		for(Tile t: GameScreen.get().currentMap.tiles){
-			if(t.collider.overlaps(collider)){
-				t.collide(this);
+			if(t.checkCollision(this)){
+				handleCollision(t);
 				/*vertical collisions*/
 				if(!t.checkIfInner(0, 1)){ //bot//
 					if(prevY>=t.collider.y+t.collider.height){
@@ -255,16 +255,16 @@ public class Player extends Entity{
 		//then entities//
 		if(replay) return;
 		for(Entity e:GameScreen.get().currentMap.entities){
-			if(e.collider.overlaps(collider)) collideWith(e);
+			if(e.collider.overlaps(collider)) handleCollision(e);
 		}
 	}
 	
-	public void collideWith(Entity e){
+	public void handleCollision(CollisionHandler e){
 		if(e==null){
 			die();
 			return;
 		}
-		CollisionResult cr =e.collideWithPlayer(this);
+		CollisionResult cr =e.handCollision(this);
 		if(cr==null)return;
 		switch(cr){
 		case Death:
@@ -353,7 +353,7 @@ public class Player extends Entity{
 		
 		
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
-		Draw.drawCentered(batch, toDraw, getX()-extraWidth+run[0].getRegionWidth()/2, getY()-extraHeight+run[0].getRegionHeight()/2);
+		Draw.drawCentered(batch, toDraw, (int)(getX()-extraWidth+run[0].getRegionWidth()/2), (int)(getY()-extraHeight+run[0].getRegionHeight()/2));
 		
 		//draw collider//
 //		batch.setColor(1,1,1,.5f);
@@ -362,6 +362,7 @@ public class Player extends Entity{
 
 
 	public void die() {
+		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
 		int missedInputs = inputs.size()-inputIndex;
 		if(replay && missedInputs>0)System.out.println(hashCode()+": "+missedInputs);
 		dead.play(multiplier);
@@ -370,6 +371,7 @@ public class Player extends Entity{
 
 	public void win() {
 		victory=true;
+		win.play();
 		GameScreen.get().currentMap.levelComplete();
 		endLife();
 	}
@@ -387,28 +389,6 @@ public class Player extends Entity{
 			}
 		} )));
 	}	
-
-	/*
-	 * int startX,startY;
-	Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
-	float stepper=0; 
-	float prevX, prevY;
-	float dx, dy;
-	float jumpKindness; 
-	float airTime=0;
-	boolean jumping; //used to check if player has hit ceiling or floor since last jump//
-	boolean onGround;
-	boolean overridePositioning; //should override positioning so can be pinged back to start//
-
-	public boolean replay; //if the player has died or won and is now a replayer//
-	public boolean replaying; //if currently replaying self//
-	boolean active; //if should be moving/accepting input/
-	public boolean victory; //if this player reached the goal//
-	int age; //how many plays ago//
-	public float multiplier=1; //determines alpha and volume for sound effects//
-	 */
-	
-
 
 	public void activate() {
 		active=true;
@@ -482,5 +462,15 @@ public class Player extends Entity{
 
 	@Override
 	public void drawLights(Batch batch) {
+	}
+
+	@Override
+	public boolean checkCollision(Player p) {
+		return false;
+	}
+
+	@Override
+	public CollisionResult handCollision(Player p) {
+		return null;
 	}
 }

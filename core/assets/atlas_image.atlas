@@ -6,119 +6,126 @@ filter: Nearest,Nearest
 repeat: none
 entity/bee
   rotate: false
-  xy: 602, 173
+  xy: 616, 250
   size: 34, 15
   orig: 34, 15
   offset: 0, 0
   index: -1
+entity/brambles
+  rotate: false
+  xy: 804, 745
+  size: 128, 32
+  orig: 128, 32
+  offset: 0, 0
+  index: -1
 entity/fairy
   rotate: false
-  xy: 602, 190
+  xy: 452, 240
   size: 162, 25
   orig: 162, 25
   offset: 0, 0
   index: -1
 entity/frog
   rotate: false
-  xy: 324, 116
+  xy: 200, 132
   size: 68, 30
   orig: 68, 30
   offset: 0, 0
   index: -1
 entity/portal
   rotate: false
-  xy: 404, 164
+  xy: 2, 111
   size: 196, 51
   orig: 196, 51
   offset: 0, 0
   index: -1
 entity/spike
   rotate: false
-  xy: 160, 80
+  xy: 160, 77
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 interface/corner
   rotate: false
-  xy: 804, 632
+  xy: 804, 714
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
 interface/edge
   rotate: false
-  xy: 766, 211
+  xy: 452, 234
   size: 1, 4
   orig: 1, 4
   offset: 0, 0
   index: -1
 interface/frill
   rotate: false
-  xy: 404, 155
+  xy: 934, 834
   size: 31, 7
   orig: 31, 7
   offset: 0, 0
   index: -1
 map/background
   rotate: false
-  xy: 2, 217
+  xy: 2, 267
   size: 800, 640
   orig: 800, 640
   offset: 0, 0
   index: -1
 map/portal
   rotate: false
-  xy: 2, 71
+  xy: 2, 68
   size: 156, 41
   orig: 156, 41
   offset: 0, 0
   index: -1
 map/tiles
   rotate: false
-  xy: 2, 114
-  size: 320, 32
-  orig: 320, 32
+  xy: 2, 233
+  size: 448, 32
+  orig: 448, 32
   offset: 0, 0
   index: -1
 mask
   rotate: false
-  xy: 804, 663
+  xy: 934, 843
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 normalmask
   rotate: false
-  xy: 934, 793
+  xy: 2, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 particle
   rotate: false
-  xy: 804, 729
+  xy: 804, 779
   size: 128, 128
   orig: 128, 128
   offset: 0, 0
   index: -1
 pixel
   rotate: false
-  xy: 870, 726
+  xy: 1000, 906
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 player/idle
   rotate: false
-  xy: 2, 2
+  xy: 404, 164
   size: 27, 67
   orig: 27, 67
   offset: 0, 0
   index: -1
 player/run
   rotate: false
-  xy: 2, 148
+  xy: 2, 164
   size: 400, 67
   orig: 400, 67
   offset: 0, 0

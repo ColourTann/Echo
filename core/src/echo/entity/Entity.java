@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import echo.Main;
 import echo.utilities.Draw;
 
-public abstract class Entity extends Actor{
+public abstract class Entity extends Actor implements CollisionHandler{
 	static float ticker=0;
 	public Rectangle collider;
 	protected float frameTicker;

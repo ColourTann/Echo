@@ -13,13 +13,15 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
 import echo.Main;
+import echo.entity.CollisionHandler;
+import echo.entity.Entity.CollisionResult;
 import echo.entity.Player;
 import echo.map.Map.TerrainType;
-import echo.screen.GameScreen;
+import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 
-public class Tile extends Actor{
+public class Tile extends Actor implements CollisionHandler{
 	static Sound rockStep = Gdx.audio.newSound(Gdx.files.internal("sfx/basefoot.wav"));
 	static Sound rockLand = Gdx.audio.newSound(Gdx.files.internal("sfx/baseland.wav"));
 	static Sound snowStep = Gdx.audio.newSound(Gdx.files.internal("sfx/snowfoot.wav"));
@@ -33,6 +35,11 @@ public class Tile extends Actor{
 
 	public static TextureRegion[] tileTextures = Main.atlas.findRegion("map/tiles").split(32, 32)[0];
 	public static TextureRegion[] backgrounds = new TextureRegion[4];
+	static TextureRegion spikeLeft;
+	static TextureRegion spikeMid;
+	static TextureRegion spikeRight;
+	static TextureRegion spikeBase;
+	static TextureRegion[] decals = new TextureRegion[3];
 	static{
 		TextureRegion[][] firstTwo =tileTextures[0].split(32, 16);
 		TextureRegion[][] secondTwo =tileTextures[1].split(32, 16);
@@ -40,16 +47,16 @@ public class Tile extends Actor{
 		backgrounds[1] = firstTwo[1][0];
 		backgrounds[2] = secondTwo[0][0];
 		backgrounds[3] = secondTwo[1][0];
-	}
-	public static TextureRegion[] decals = new TextureRegion[3];
-	static{
-		TextureRegion[][] firstTwo =tileTextures[7].split(32, 16);
-		
+		spikeLeft=tileTextures[10];
+		spikeMid=tileTextures[11];
+		spikeRight=tileTextures[12];
+		spikeBase=tileTextures[13];
 		decals[0] = firstTwo[0][0];
 		decals[1] = firstTwo[1][0];
 		decals[2] = Main.atlas.findRegion("map/tiles").split(64, 32)[0][4];
-		
 	}
+	
+	
 	static final Color goal = Colours.make(212,240,58);
 	public static final int tileWidth=32;
 	public static final int tileHeight=16;
@@ -61,6 +68,7 @@ public class Tile extends Actor{
 	TextureRegion texture;
 	TextureRegion decal;
 	boolean decalBlock;
+	boolean spikeRotate;
 	public Tile(int x, int y, TerrainType type) {
 		collider=new Rectangle(x*tileWidth,y*tileHeight,tileWidth,visibleHeight);
 		this.x=x;this.y=y;
@@ -84,9 +92,72 @@ public class Tile extends Actor{
 		case snow:texture=tileTextures[4];break;
 		case metal:texture=tileTextures[5];break;
 		case water:	texture=tileTextures[6]; break;
+		case spike:	setupSpikeTexture(); break;
 		default:
 			break;
 		}
+	}
+	
+	private void setupSpikeTexture() {
+		switch(check()){
+		case base:
+			texture=spikeBase;
+			break;
+		case hLeft:
+			texture=spikeLeft;
+			break;
+		case hMid:
+			texture=spikeMid;
+			break;
+		case hRight:
+			texture=spikeRight;
+			break;
+		case vBot:
+			texture=spikeLeft; spikeRotate=true;
+			break;
+		case vMid:
+			texture=spikeMid; spikeRotate=true;
+			break;
+		case vTop:
+			texture=spikeRight; spikeRotate=true;
+			break;
+		default:
+			break;
+		}
+	}
+
+	enum SpikeType{vTop, vMid, vBot, hLeft, hMid, hRight, base};
+	private SpikeType check(){
+		Tile left = getTile(-1, 0);
+		Tile right = getTile(1, 0);
+		Tile up = getTile(0, -2);
+		Tile down = getTile(0, 2);
+		
+		boolean leftSpike=left!=null&&left.type==TerrainType.spike;
+		boolean rightSpike=right!=null&&right.type==TerrainType.spike;
+		boolean upSpike=up!=null&&up.type==TerrainType.spike&&!up.hasSpikeLR();
+		boolean downSpike=down!=null&&down.type==TerrainType.spike&&!down.hasSpikeLR();  //ugh//
+
+		if(leftSpike&&rightSpike)return SpikeType.hMid;
+		if(leftSpike)return SpikeType.hRight;
+		if(rightSpike)return SpikeType.hLeft;
+		if(upSpike&&downSpike)return SpikeType.vMid;
+		if(downSpike)return SpikeType.vTop;
+		if(upSpike)return SpikeType.vBot; 		
+		return SpikeType.base;
+	}
+	
+	private boolean hasSpikeLR(){
+		Tile left = getTile(-1, 0);
+		Tile right = getTile(1, 0);
+		return (left!=null&&left.type==TerrainType.spike)||(right!=null&&right.type==TerrainType.spike);
+	}
+	
+	Tile getTile(int dx, int dy){
+		int newX=x+dx; int newY=y+dy;
+		if(newX<0||newX>=Main.tilesAcross||
+				newY<0||newY>=Main.tilesDown)return null;
+		return GameScreen.get().currentMap.tilesArray[newX][newY];
 	}
 	
 	private void setupBaseTexture() {
@@ -171,13 +242,15 @@ public class Tile extends Actor{
 		return (float) (Math.random()*variance*2+(1-variance));
 	}
 
-
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(Color.WHITE);
-		if(texture!=null){
-			Draw.draw(batch, texture, collider.x, collider.y);
+		float bonusY=((type==TerrainType.spike)?-Player.extraHeight:0);
+		if(spikeRotate){
+			Draw.drawRotatedScaled(batch, texture, collider.x+getWidth(), collider.y+bonusY+Tile.tileHeight*2, 1, 1, (float)-Math.PI/2);
 		}
-		
+		else if(texture!=null){
+			Draw.draw(batch, texture, collider.x, collider.y+bonusY);
+		}
 	}
 	
 	public void postDraw(Batch batch){
@@ -186,35 +259,33 @@ public class Tile extends Actor{
 			Draw.draw(batch, decal, collider.x, collider.y);
 		}
 	}
-	
-	public void collide(Player p){
-		switch(type){
-		case background:
-			break;
-		case base:
-			break;
-		case goal: 
-			break;
-		case player:
-			break;
-		case snow:
-			break;
-		default:
-			break;
-		}
-	}
 
 	public void land(Player p) {
-
 		switch(type){
 		case background:
 			p.die();
-			break;
+			return;
 		default:
 			break;
 		}
 		Sound s=type.foot[(int) (Math.random()*2)];
 		if(s==null) return;
 		s.play(p.multiplier, getPitch(), 0);
+	}
+
+	@Override
+	public boolean checkCollision(Player p) {
+		return(collider.overlaps(p.collider));
+	}
+
+	@Override
+	public CollisionResult handCollision(Player p) {
+		switch(type){
+		case spike:
+			return CollisionResult.Death;
+		default:
+			return null;
+		}
+		
 	}
 }

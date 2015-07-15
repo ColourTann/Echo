@@ -23,8 +23,7 @@ import echo.entity.Fairy;
 import echo.entity.Portal;
 import echo.entity.Player;
 import echo.entity.Bee.Direction;
-import echo.entity.Spike;
-import echo.screen.GameScreen;
+import echo.screen.gameScreen.GameScreen;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
@@ -32,7 +31,7 @@ import echo.utilities.Font;
 
 public class Map extends Group{
 	public enum MapState{Waiting, Playing, Replaying, Victory};
-	static float fairyTimer=4;
+	
 	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
 	Sound[] foot = new Sound[2];
 	TerrainType(){
@@ -55,13 +54,13 @@ public class Map extends Group{
 	public boolean ready=true;
 	public Portal portal;
 	float fairyTicks;
+	public boolean helpRequested;
 	public Map(int levelNum) {		
 		this.level=levelNum;
 		loadMap(levelNum+"");
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
-		//		setColor(0,0,0,0);
 	}
 
 	public void addFairy() {
@@ -72,19 +71,19 @@ public class Map extends Group{
 		float amountOffscreen=300;
 		double rand = Math.random();
 
-		float offScreenX= tx>Main.width/2?-amountOffscreen:Main.width+amountOffscreen;
-		float offScreenY= ty>Main.height/2?-amountOffscreen:Main.height+amountOffscreen;
+		float offScreenX= tx>Gdx.graphics.getWidth()/2?-amountOffscreen:Gdx.graphics.getWidth()+amountOffscreen;
+		float offScreenY= ty>Gdx.graphics.getHeight()/2?-amountOffscreen:Gdx.graphics.getHeight()+amountOffscreen;
 
 
 
 		if(Math.random()<.3){
 			sx=offScreenX;
-			sy = (float) (Math.random()/2*Main.height/2)+Main.height/4;
+			sy = (float) (Math.random()/2*Gdx.graphics.getHeight()/2)+Gdx.graphics.getHeight()/4;
 		}
 
 		else if( rand < .6){
 			sy=offScreenY;
-			sx = (float) (Math.random()*Main.width/2)+Main.width/4;
+			sx = (float) (Math.random()*Gdx.graphics.getWidth()/2)+Gdx.graphics.getWidth()/4;
 		}		
 		else{
 			sx=offScreenX;
@@ -118,8 +117,9 @@ public class Map extends Group{
 				case snow:
 				case metal:
 				case water:
-					//add extra base tile below//
 					addTile(x, location-1, TerrainType.base);
+					//add extra base tile below and FALL THROUGH//
+				case spike:
 					addTile(x, location, target);
 					break;
 				case player:
@@ -134,9 +134,7 @@ public class Map extends Group{
 					addSwarm(x, location, Direction.DOWN, beeSound);
 					beeSound=false;
 					break;
-				case spike:
-					addEntity(new Spike(x, location));
-					break;
+
 				default:
 					break;
 				}
@@ -159,7 +157,7 @@ public class Map extends Group{
 	private void lightsIntoBuffer(Batch batch){
 		Draw.beginBuffer(batch);
 		batch.setColor(0,0,0,1);
-		Draw.fillRectangle(batch, 0, 0, Main.width, Main.height);
+		Draw.fillRectangle(batch, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		batch.setBlendFunction(GL20.GL_ONE, GL20.GL_ONE);
 		Gdx.gl20.glBlendEquation(GL30.GL_FUNC_REVERSE_SUBTRACT);
 		batch.setColor(0,0,0,1);
@@ -177,11 +175,9 @@ public class Map extends Group{
 			fairyTicks-=delta;
 			if(fairyTicks<=0){
 				addFairy();
-				fairyTicks=(float) (Math.random()*fairyTimer);
+				fairyTicks=(float) (Math.random()*(helpRequested?.8f:4));
 			}
 		}
-
-
 		super.act(delta);
 	}
 
@@ -218,11 +214,12 @@ public class Map extends Group{
 				resetLevel();
 			}
 			break;
-		case Keys.R:
-			
-			break;
 		}
 		currentPlayer.keyDown(keyCode);
+	}
+
+	public void requestHelp() {
+		helpRequested=true;
 	}
 
 	boolean transitioning;
@@ -297,10 +294,10 @@ public class Map extends Group{
 
 	private void setupBorders() {
 		int offset=20, depth=100;
-		Tile bot =new Tile(-offset, -depth, Main.width+offset*2, depth);
-		Tile top =new Tile(-offset, Main.height, Main.width+offset*2, depth);
-		Tile left = new Tile(-depth, -offset, depth, Main.height+offset*2);
-		Tile right =new Tile(Main.width, -offset, depth, Main.height+offset*2); 
+		Tile bot =new Tile(-offset, -depth, Gdx.graphics.getWidth()+offset*2, depth);
+		Tile top =new Tile(-offset, Gdx.graphics.getHeight(), Gdx.graphics.getWidth()+offset*2, depth);
+		Tile left = new Tile(-depth, -offset, depth, Gdx.graphics.getHeight()+offset*2);
+		Tile right =new Tile(Gdx.graphics.getWidth(), -offset, depth, Gdx.graphics.getHeight()+offset*2); 
 		tiles.add(bot); 
 		tiles.add(top); 
 		tiles.add(left); 
@@ -329,8 +326,6 @@ public class Map extends Group{
 		batch.end();
 		lightsIntoBuffer(batch);
 		batch.begin();
-
-
 		batch.setColor(getColor());
 		Draw.draw(batch, Draw.getBuffer().getColorBufferTexture(), 0, 0);
 	}
@@ -349,12 +344,14 @@ public class Map extends Group{
 		addAction(Actions.alpha(1, .15f));
 	}
 
-	public void showAllReplays(){
+	public void showReplays(boolean all){
 		GameScreen.get().setState(currentPlayer.victory?MapState.Victory:MapState.Replaying);
 		replaying=true;
 		resetEntities();
+		if(all){
 		for(Player p:deadPlayers){
 			deadReplay(p);
+		}
 		}
 		beginEntities();
 		currentPlayer.toFront();
@@ -368,12 +365,14 @@ public class Map extends Group{
 
 	public boolean finishedReplaying() {
 		if(currentPlayer.replaying) return false;
-		for(Player p:deadPlayers) if(p.replaying) return false;
+		if(victory){
+			for(Player p:deadPlayers) if(p.replaying) return false;
+		}
 		return true;
 	}
 	public void finishedMovingBack() {
 		if(finishedReplaying()){
-			showAllReplays();
+			showReplays(victory);
 		}
 	}
 
@@ -396,11 +395,23 @@ public class Map extends Group{
 
 	public void levelComplete() {
 		victory=true;
+		GameScreen.get().hideFairyHelp();
 	}
 
 	boolean finishedZooming;
 	public void finishedZooming() {
 		finishedZooming=true;
+	}
+
+	public void killEntity(Entity e) {
+		entities.remove(e);
+		removeActor(e);
+	}
+
+	int fails=0;
+	public void levelFailed() {
+		fails++;
+		if(fails==4)GameScreen.get().showFairyHelp();
 	}
 
 }
