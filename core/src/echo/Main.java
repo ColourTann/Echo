@@ -41,7 +41,7 @@ import echo.utilities.Draw.BlendType;
 
 
 public class Main extends Game {
-	public static final float version = 0.5f;
+	public static final float version = 0.6f;
 	public static final float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;

@@ -35,7 +35,7 @@ public class GameScreen implements Screen{
 		return self;
 	}
 	
-	public static int level=0;
+	public static int level=7;
 	SpriteBatch stageBatch;
 	Stage stage;
 	OrthographicCamera cam;
@@ -119,8 +119,13 @@ public class GameScreen implements Screen{
 		switch(state){
 		case Playing:
 		case Waiting:
-			if(level==0)setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nArrow keys to move");
-			else setPanelText("Level "+(level+1));
+			switch(level){
+				case 0: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nKeep moving right"); break;
+				case 1: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nPress up to jump"); break;
+				default: setPanelText("Level "+(level+1)); break;
+			}
+			
+			
 			break;
 		case Replaying:
 			setPanelText("Level "+(level+1)+"\nReplaying\nSpace to retry");

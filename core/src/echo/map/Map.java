@@ -99,6 +99,7 @@ public class Map extends Group{
 
 	private void loadMap(String string) {
 		boolean beeSound=true;
+		if(string.length()==1)string=0+string;
 		Pixmap p = Draw.getPix("map/"+string);
 		for(int y=Main.tilesDown/2;y>0;y--){
 			for(int x=0;x<Main.tilesAcross;x++){
@@ -378,7 +379,7 @@ public class Map extends Group{
 
 	static HashMap<Integer, TerrainType> mapKey= new HashMap<Integer, Map.TerrainType>();
 	public static void setupMapParser() {
-		Pixmap p = Draw.getPix("map/0");
+		Pixmap p = Draw.getPix("map/00");
 		mapKey.put(p.getPixel(0, 0), TerrainType.background);
 		mapKey.put(p.getPixel(1, 0), TerrainType.base);
 		mapKey.put(p.getPixel(2, 0), TerrainType.stone);

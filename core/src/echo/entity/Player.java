@@ -208,10 +208,14 @@ public class Player extends Entity{
 
 	private void jump() {
 		if(jumpKindness<0||!active)return;
-		jumpSound.play(multiplier);
+		jumpSound.play(getSoundMultiplier());
 		dy = jumpStrength;
 		airTime=0;
 		jumping=true;
+	}
+
+	public float getSoundMultiplier() {
+		return multiplier*multiplier;
 	}
 
 	private void checkCollisions() {
@@ -302,7 +306,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
-			landSound.play();
+			landSound.play(getSoundMultiplier());
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -365,13 +369,13 @@ public class Player extends Entity{
 		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
 		int missedInputs = inputs.size()-inputIndex;
 		if(replay && missedInputs>0)System.out.println(hashCode()+": "+missedInputs);
-		dead.play(multiplier);
+		dead.play(getSoundMultiplier());
 		endLife();
 	}
 
 	public void win() {
 		victory=true;
-		win.play();
+		win.play(getSoundMultiplier());
 		GameScreen.get().currentMap.levelComplete();
 		endLife();
 	}
@@ -396,8 +400,8 @@ public class Player extends Entity{
 
 	public void age(){
 		age++;
-		multiplier*=.8f;
-		multiplier=Math.max(.3f, multiplier);
+		multiplier*=.7f;
+		multiplier=Math.max(.2f, multiplier);
 	}
 
 	public void moveBack() {

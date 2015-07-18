@@ -43,6 +43,7 @@ public class Tile extends Actor implements CollisionHandler{
 	static{
 		TextureRegion[][] firstTwo =tileTextures[0].split(32, 16);
 		TextureRegion[][] secondTwo =tileTextures[1].split(32, 16);
+		TextureRegion[][] smallDecals = tileTextures[7].split(32, 16);
 		backgrounds[0] = firstTwo[0][0];
 		backgrounds[1] = firstTwo[1][0];
 		backgrounds[2] = secondTwo[0][0];
@@ -51,8 +52,9 @@ public class Tile extends Actor implements CollisionHandler{
 		spikeMid=tileTextures[11];
 		spikeRight=tileTextures[12];
 		spikeBase=tileTextures[13];
-		decals[0] = firstTwo[0][0];
-		decals[1] = firstTwo[1][0];
+		
+		decals[0] = smallDecals[0][0];
+		decals[1] = smallDecals[1][0];
 		decals[2] = Main.atlas.findRegion("map/tiles").split(64, 32)[0][4];
 	}
 	
@@ -234,7 +236,7 @@ public class Tile extends Actor implements CollisionHandler{
 	public void step(Player p){
 		Sound s=type.foot[(int) (Math.random()*2)];
 		if(s==null) return;
-		s.play(p.multiplier, 1, 0);
+		s.play(p.getSoundMultiplier(), 1, 0);
 	}
 
 	static final float variance = .1f;
@@ -270,7 +272,7 @@ public class Tile extends Actor implements CollisionHandler{
 		}
 		Sound s=type.foot[(int) (Math.random()*2)];
 		if(s==null) return;
-		s.play(p.multiplier, getPitch(), 0);
+		s.play(p.getSoundMultiplier(), getPitch(), 0);
 	}
 
 	@Override
