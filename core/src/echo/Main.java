@@ -18,7 +18,7 @@ import echo.utilities.TannScreen;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.6f;
+	public static final float version = 0.7f;
 	public static final float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;

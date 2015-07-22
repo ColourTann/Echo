@@ -31,9 +31,9 @@ public class Player extends Entity{
 	/*sounds*/
 	static final Sound[] jumpSound = new Sound[4];
 	static final Sound[] landSound = new Sound[3];
-	static final Sound[] wallSound = new Sound[2];
+	static final Sound[] wallSound = new Sound[1];
 	static{
-		for(int i=0;i<=1;i++){
+		for(int i=0;i<=0;i++){
 			wallSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/wall"+i+".wav"));
 		}
 		for(int i=0;i<=2;i++){
@@ -239,6 +239,7 @@ public class Player extends Entity{
 		for(Tile t: GameScreen.get().currentMap.tiles){
 			if(t.checkCollision(this)){
 				handleCollision(t);
+				if(!active)return;
 				/*vertical collisions*/
 				if(!t.checkIfInner(0, 1)){ //bot//
 					if(prevY>=t.collider.y+t.collider.height){
@@ -322,7 +323,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
-			landSound[(int) (Math.random()*landSound.length)].play(getSoundMultiplier());
+			if(active) landSound[(int) (Math.random()*landSound.length)].play(getSoundMultiplier());
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -361,7 +362,7 @@ public class Player extends Entity{
 		if(replay)batch.setColor(playerReplayCol);
 		if(age>0) Colours.setBatchColour(batch, playerReplayCol, multiplier*getColor().a);
 		TextureRegion toDraw;
-		if(dx==0) toDraw=idle;
+		if(dx==0&&dy==0) toDraw=idle;
 		else if(dy!=0){
 			if(dy>jumpFrameThreshold) toDraw=run[5];
 			else if(dy<-jumpFrameThreshold) toDraw=run[7];
