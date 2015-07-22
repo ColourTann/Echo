@@ -12,11 +12,11 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.resizable=false;
-		Settings settings = new Settings();
 		config.vSyncEnabled=false;
 		config.foregroundFPS=60;
 		config.width=800;
 		config.height=640;
+		Settings settings = new Settings();
 		settings.combineSubdirectories = true;
 		TexturePacker.process(settings, "../images",
 				"../core/assets", "atlas_image");

@@ -22,14 +22,7 @@ import echo.utilities.Colours;
 import echo.utilities.Draw;
 
 public class Tile extends Actor implements CollisionHandler{
-	static Sound rockStep = Gdx.audio.newSound(Gdx.files.internal("sfx/basefoot.wav"));
-	static Sound rockLand = Gdx.audio.newSound(Gdx.files.internal("sfx/baseland.wav"));
-	static Sound snowStep = Gdx.audio.newSound(Gdx.files.internal("sfx/snowfoot.wav"));
-	static Sound snowLand = Gdx.audio.newSound(Gdx.files.internal("sfx/snowland.wav"));
-	static Sound metalStep = Gdx.audio.newSound(Gdx.files.internal("sfx/metalfoot.wav"));
-	static Sound metalLand = Gdx.audio.newSound(Gdx.files.internal("sfx/metalland.wav"));
-	static Sound grassStep = Gdx.audio.newSound(Gdx.files.internal("sfx/grassfoot.wav"));
-	static Sound grassLand = Gdx.audio.newSound(Gdx.files.internal("sfx/grassland.wav"));
+
 
 
 

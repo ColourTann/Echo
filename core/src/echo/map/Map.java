@@ -13,6 +13,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 
@@ -24,6 +26,7 @@ import echo.entity.Portal;
 import echo.entity.Player;
 import echo.entity.Bee.Direction;
 import echo.screen.gameScreen.GameScreen;
+import echo.screen.gameScreen.Menu;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
@@ -61,6 +64,15 @@ public class Map extends Group{
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
+		addListener(new InputListener(){
+			@Override
+			public boolean keyDown(InputEvent event, int keyCode){
+				
+				System.out.println(keyCode);
+				
+				return false;
+			}	
+		});
 	}
 
 	public void addFairy() {
@@ -192,6 +204,7 @@ public class Map extends Group{
 	boolean victory;
 
 	public void keyDown(int keyCode){
+		if(Menu.active)return;
 		if(transitioning||!finishedZooming) return;
 		switch(keyCode){
 		case Keys.HOME:
@@ -220,6 +233,7 @@ public class Map extends Group{
 	}
 
 	public void requestHelp() {
+		Fairy.setBrightness(Fairy.help);
 		helpRequested=true;
 	}
 
@@ -362,6 +376,7 @@ public class Map extends Group{
 	private void deadReplay(Player p) {
 		p.startReplay();
 		addActor(p);
+		
 	}
 
 	public boolean finishedReplaying() {
@@ -376,6 +391,8 @@ public class Map extends Group{
 			showReplays(victory);
 		}
 	}
+	
+
 
 	static HashMap<Integer, TerrainType> mapKey= new HashMap<Integer, Map.TerrainType>();
 	public static void setupMapParser() {
@@ -396,7 +413,6 @@ public class Map extends Group{
 
 	public void levelComplete() {
 		victory=true;
-		GameScreen.get().hideFairyHelp();
 	}
 
 	boolean finishedZooming;
@@ -412,7 +428,7 @@ public class Map extends Group{
 	int fails=0;
 	public void levelFailed() {
 		fails++;
-		if(fails==4)GameScreen.get().showFairyHelp();
+		if(fails==4)GameScreen.get().fairyHelp.showFairyHelp();
 	}
 
 }

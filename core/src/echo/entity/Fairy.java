@@ -91,6 +91,7 @@ public class Fairy extends Entity{
 
 
 	protected void kill() {
+		dead=true;
 		GameScreen.get().currentMap.killEntity(this);
 	}
 
@@ -111,7 +112,13 @@ public class Fairy extends Entity{
 	public void begin() {
 	}
 
-
+	public static float noHelp=1.5f;
+	public static float help =5;
+	private static float scale = 1;
+	public static void setBrightness(float scale){
+		Fairy.scale=scale;
+		
+	}
 
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(getColor());
@@ -122,7 +129,6 @@ public class Fairy extends Entity{
 	@Override
 	public void drawLights(Batch batch) {
 		batch.setColor(getColor());
-		float scale = GameScreen.get().currentMap.helpRequested?7:1.5f;
 		Draw.drawCenteredScaled(batch, getMask(), getX(), Gdx.graphics.getHeight()-getY(),scale, scale);
 	}
 

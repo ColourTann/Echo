@@ -12,11 +12,11 @@ public class ButtonBorder{
 	static TextureRegion edge = Main.atlas.findRegion("interface/edge");
 	static TextureRegion frill = Main.atlas.findRegion("interface/frill");
 	static final Color bgCol = Colours.make(35, 45, 50); 
+	static final Color highlightgCol = Colours.make(135, 145, 150);
 	static final float gap =3;
 	
-	public static void drawBorder(Batch batch, float x, float y, float width, float height){
-		
-		batch.setColor(bgCol);
+	public static void drawBorder(Batch batch, float x, float y, float width, float height, boolean highlight){
+		batch.setColor(highlight?highlightgCol:bgCol);
 		Draw.fillRectangle(batch, x+gap, y+gap, width-gap*2, height-gap*2);
 		
 		batch.setColor(1,1,1,1);
@@ -37,8 +37,6 @@ public class ButtonBorder{
 		Draw.draw(batch, corner, x+width-corner.getRegionWidth(), y+height-corner.getRegionHeight());
 		corner.flip(false, true);
 		Draw.draw(batch, corner, x+width-corner.getRegionWidth(), y);
-		corner.flip(true, false);
-		
-		
+		corner.flip(true, false);		
 	}
 }

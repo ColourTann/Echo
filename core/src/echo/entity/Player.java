@@ -18,6 +18,7 @@ import echo.map.Tile;
 import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
+import echo.utilities.Slider;
 
 public class Player extends Entity{
 	/*bytes*/
@@ -28,16 +29,29 @@ public class Player extends Entity{
 	static final byte byteJumpPressed= 	1<<3;
 	static final byte byteR= 	1<<4;
 	/*sounds*/
-	static final Sound jumpSound = Gdx.audio.newSound(Gdx.files.internal("sfx/jump.wav"));
-	static final Sound landSound = Gdx.audio.newSound(Gdx.files.internal("sfx/land.wav"));
+	static final Sound[] jumpSound = new Sound[4];
+	static final Sound[] landSound = new Sound[3];
+	static final Sound[] wallSound = new Sound[2];
+	static{
+		for(int i=0;i<=1;i++){
+			wallSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/wall"+i+".wav"));
+		}
+		for(int i=0;i<=2;i++){
+			landSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/land"+i+".wav"));
+		}
+		for(int i=0;i<=3;i++){
+			jumpSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/jump"+i+".wav"));
+		}
+	}
+
 	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
 	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
 	/*constants*/
 	static final float animSpd=.04f;
 	static final float deathDelay=.7f;
 	public static final int extraHeight=Tile.visibleHeight/3;
-	
-//	static final int rectWidth=Tile.tileWidth, rectHeight=(int) (Tile.visibleHeight+extraHeight);
+
+	//	static final int rectWidth=Tile.tileWidth, rectHeight=(int) (Tile.visibleHeight+extraHeight);
 
 	static final float gravity =5400;
 	static final float jumpStrength=840f, maxJumpTime=.18f;
@@ -51,8 +65,8 @@ public class Player extends Entity{
 		TextureRegion sheetRun = Main.atlas.findRegion("player/run");
 		run = sheetRun.split(sheetRun.getRegionWidth()/8, sheetRun.getRegionHeight())[0];
 	}
-	 
-	 
+
+
 	static TextureRegion idle = Main.atlas.findRegion("player/idle");
 	static final int rectWidth=run[0].getRegionWidth()/2, rectHeight=(int) (run[0].getRegionHeight()/1.4f);
 	public static final int extraWidth=rectWidth/2;
@@ -65,7 +79,7 @@ public class Player extends Entity{
 	/*positioning*/
 	int startX,startY;
 	public Rectangle collider = new Rectangle(0, 0, rectWidth, rectHeight);
-	
+
 	static final int feetWidth=(int) (rectWidth*.1f);
 	static final int feetHeight=1;
 	Rectangle feet = new Rectangle(0, 0, feetWidth, feetHeight);
@@ -99,7 +113,7 @@ public class Player extends Entity{
 		super.act(delta);
 		if(!active)return;
 		if(replay&&!replaying)return;
-//		System.out.println("player: "+fn++);
+		//		System.out.println("player: "+fn++);
 		/* if replaying, take input from list, otherwise record input */
 
 		if(replay){
@@ -127,7 +141,7 @@ public class Player extends Entity{
 		feet.x=collider.x+collider.width/2-feet.width/2;
 		feet.y=collider.y-1;
 	}
-	
+
 	private void admin(float delta) {
 		float mult=dy==0?1:.4f;
 		frameTicker+=Math.abs(dx)*delta*animSpd*mult;
@@ -172,12 +186,12 @@ public class Player extends Entity{
 	}
 
 	private void doInput(byte input, float delta) {		
-		
+
 		if((input&byteR)>0){
 			die();
 			return;
 		}
-		
+
 		float lr=0;
 		if((input&byteLeft)>0){
 			faceSide(-1);
@@ -208,14 +222,14 @@ public class Player extends Entity{
 
 	private void jump() {
 		if(jumpKindness<0||!active)return;
-		jumpSound.play(getSoundMultiplier());
+		jumpSound[(int) (Math.random()*jumpSound.length)].play(getSoundMultiplier());
 		dy = jumpStrength;
 		airTime=0;
 		jumping=true;
 	}
 
 	public float getSoundMultiplier() {
-		return multiplier*multiplier;
+		return multiplier*multiplier*Slider.SFX.getValue()*2;
 	}
 
 	private void checkCollisions() {
@@ -262,7 +276,7 @@ public class Player extends Entity{
 			if(e.collider.overlaps(collider)) handleCollision(e);
 		}
 	}
-	
+
 	public void handleCollision(CollisionHandler e){
 		if(e==null){
 			die();
@@ -285,6 +299,8 @@ public class Player extends Entity{
 	}
 
 	private void touchWall(Tile t) {
+		System.out.println(t);
+		if(Math.abs(dx)>100)wallSound[(int) (Math.random()*wallSound.length)].play(getSoundMultiplier());
 		dx=0;
 	}
 
@@ -295,7 +311,7 @@ public class Player extends Entity{
 
 	private void touchGround(Tile underneath) {
 		dy=0;
-		
+
 		onGround=true;
 		jumping=false;
 		jumpKindness=groundTimerNiceness;
@@ -306,7 +322,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
-			landSound.play(getSoundMultiplier());
+			landSound[(int) (Math.random()*landSound.length)].play(getSoundMultiplier());
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -342,33 +358,23 @@ public class Player extends Entity{
 	static int jumpFrameThreshold=400;
 	public void draw(Batch batch, float parentAlpha){
 		batch.setColor(1,1,1,1);
+		if(replay)batch.setColor(playerReplayCol);
 		if(age>0) Colours.setBatchColour(batch, playerReplayCol, multiplier*getColor().a);
-		
-		TextureRegion toDraw=run[(int) frameTicker];
+		TextureRegion toDraw;
 		if(dx==0) toDraw=idle;
-		
-		if(dy!=0){
-			
+		else if(dy!=0){
 			if(dy>jumpFrameThreshold) toDraw=run[5];
 			else if(dy<-jumpFrameThreshold) toDraw=run[7];
-			else toDraw = run[6];
-			
+			else toDraw = run[6];	
 		}
-		
-		
+		else toDraw=run[(int) frameTicker];
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
 		Draw.drawCentered(batch, toDraw, (int)(getX()-extraWidth+run[0].getRegionWidth()/2), (int)(getY()-extraHeight+run[0].getRegionHeight()/2));
-		
-		//draw collider//
-//		batch.setColor(1,1,1,.5f);
-//		Draw.fillRectangle(batch, feet.x, feet.y, feet.width, feet.height);
 	}
 
 
 	public void die() {
 		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
-		int missedInputs = inputs.size()-inputIndex;
-		if(replay && missedInputs>0)System.out.println(hashCode()+": "+missedInputs);
 		dead.play(getSoundMultiplier());
 		endLife();
 	}
@@ -384,7 +390,6 @@ public class Player extends Entity{
 		if(!replay) {
 			GameScreen.get().currentMap.lightsOn();
 		}
-		replay=true;
 		active=false;
 		addAction(Actions.delay(age>0?0:deathDelay, Actions.run(new Runnable() {
 			@Override
@@ -447,13 +452,13 @@ public class Player extends Entity{
 		overridePositioning=false;
 		replaying=false;
 		facingSide=1;
-		
+
 		currentFrame=0;
 		frameTicker=0;
-		
+
 		collider.x=startX;
 		collider.y=startY;
-		
+
 		updateSprite();
 		updatePreviousPosition();
 		inputIndex=0;

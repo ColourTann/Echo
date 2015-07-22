@@ -6,127 +6,133 @@ filter: Nearest,Nearest
 repeat: none
 entity/bee
   rotate: false
-  xy: 616, 250
+  xy: 616, 228
   size: 34, 15
   orig: 34, 15
   offset: 0, 0
   index: -1
 entity/brambles
   rotate: false
-  xy: 804, 745
+  xy: 804, 800
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 entity/fairy
   rotate: false
-  xy: 452, 240
+  xy: 452, 218
   size: 162, 25
   orig: 162, 25
   offset: 0, 0
   index: -1
 entity/frog
   rotate: false
-  xy: 200, 132
+  xy: 160, 110
   size: 68, 30
   orig: 68, 30
   offset: 0, 0
   index: -1
 entity/portal
   rotate: false
-  xy: 2, 111
+  xy: 804, 834
   size: 196, 51
   orig: 196, 51
   offset: 0, 0
   index: -1
 entity/spike
   rotate: false
-  xy: 160, 77
+  xy: 934, 800
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 interface/corner
   rotate: false
-  xy: 804, 714
+  xy: 2, 2
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
 interface/edge
   rotate: false
-  xy: 452, 234
+  xy: 1002, 881
   size: 1, 4
   orig: 1, 4
   offset: 0, 0
   index: -1
 interface/frill
   rotate: false
-  xy: 934, 834
+  xy: 68, 90
   size: 31, 7
   orig: 31, 7
   offset: 0, 0
   index: -1
 map/background
   rotate: false
-  xy: 2, 267
+  xy: 2, 245
   size: 800, 640
   orig: 800, 640
   offset: 0, 0
   index: -1
 map/portal
   rotate: false
-  xy: 2, 68
+  xy: 2, 99
   size: 156, 41
   orig: 156, 41
   offset: 0, 0
   index: -1
 map/tiles
   rotate: false
-  xy: 2, 233
+  xy: 2, 211
   size: 448, 32
   orig: 448, 32
   offset: 0, 0
   index: -1
 mask
   rotate: false
-  xy: 934, 843
+  xy: 2, 33
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 normalmask
   rotate: false
-  xy: 2, 2
+  xy: 804, 734
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
-particle
-  rotate: false
-  xy: 804, 779
-  size: 128, 128
-  orig: 128, 128
-  offset: 0, 0
-  index: -1
 pixel
   rotate: false
-  xy: 1000, 906
+  xy: 452, 215
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 player/idle
   rotate: false
-  xy: 404, 164
+  xy: 404, 142
   size: 27, 67
   orig: 27, 67
   offset: 0, 0
   index: -1
 player/run
   rotate: false
-  xy: 2, 164
+  xy: 2, 142
   size: 400, 67
   orig: 400, 67
+  offset: 0, 0
+  index: -1
+
+atlas_image2.png
+size: 512,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+sagdclogo
+  rotate: false
+  xy: 2, 2
+  size: 300, 459
+  orig: 300, 459
   offset: 0, 0
   index: -1
