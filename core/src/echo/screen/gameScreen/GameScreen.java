@@ -1,10 +1,12 @@
 package echo.screen.gameScreen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.utils.Align;
+
 import echo.Main;
 import echo.entity.Fairy;
 import echo.map.Map;
@@ -23,12 +25,12 @@ public class GameScreen extends TannScreen{
 		return self;
 	}
 
-	public static int level=0;
+	public static int level=39;
 	public Map currentMap;
 	public FairyHelp fairyHelp;
 	private GameScreen() {
 	}
-
+ 
 	private void create() {
 		init();
 		topPanel=new TextRegion("", 0, 0, 170);
@@ -71,16 +73,16 @@ public class GameScreen extends TannScreen{
 			switch(level){
 			case 0: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nKeep moving right"); break;
 			case 1: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nPress up to jump"); break;
-			default: setPanelText("Level "+(level+1)); break;
+			default: setPanelText("Level "+(level)); break;
 			}
 
 
 			break;
 		case Replaying:
-			setPanelText("Level "+(level+1)+"\nReplaying\nSpace to retry");
+			setPanelText("Level "+(level)+"\nReplaying\nSpace to retry");
 			break;
 		case Victory:
-			setPanelText("Level "+(level+1)+"\nYou win!\nSpace to continue");
+			setPanelText("Level "+(level)+"\nYou win!\nSpace to continue");
 			break;
 		default:
 			break;
@@ -101,7 +103,7 @@ public class GameScreen extends TannScreen{
 	}
 
 	public void nextLevel() {
-		changeMap((++level)%13);
+		changeMap((++level));
 		setState(MapState.Waiting);
 	}
 
@@ -178,6 +180,11 @@ public class GameScreen extends TannScreen{
 
 	@Override
 	public void keyPressed(int keyCode) {
+		switch(keyCode){
+		case Keys.NUMPAD_0:
+			nextLevel();
+			break;
+		}
 	}
 
 

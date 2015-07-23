@@ -300,7 +300,6 @@ public class Player extends Entity{
 	}
 
 	private void touchWall(Tile t) {
-		System.out.println(t);
 		if(Math.abs(dx)>100)wallSound[(int) (Math.random()*wallSound.length)].play(getSoundMultiplier());
 		dx=0;
 	}
