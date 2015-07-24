@@ -52,7 +52,7 @@ public class Map extends Group{
 	public ArrayList<Entity> entities = new ArrayList<Entity>();
 	String mapString;
 	int playerStartX, playerStartY;
-	int level;
+	public int level;
 	public Player currentPlayer;
 	public boolean ready=true;
 	public Portal portal;
@@ -64,15 +64,6 @@ public class Map extends Group{
 		setupBorders();
 		makePlayer();
 		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
-		addListener(new InputListener(){
-			@Override
-			public boolean keyDown(InputEvent event, int keyCode){
-				
-				System.out.println(keyCode);
-				
-				return false;
-			}	
-		});
 	}
 
 	public void addFairy() {
@@ -396,7 +387,7 @@ public class Map extends Group{
 
 	static HashMap<Integer, TerrainType> mapKey= new HashMap<Integer, Map.TerrainType>();
 	public static void setupMapParser() {
-		Pixmap p = Draw.getPix("map/00");
+		Pixmap p = Draw.getPix("map/01");
 		mapKey.put(p.getPixel(0, 0), TerrainType.background);
 		mapKey.put(p.getPixel(1, 0), TerrainType.base);
 		mapKey.put(p.getPixel(2, 0), TerrainType.stone);
@@ -412,6 +403,7 @@ public class Map extends Group{
 	}
 
 	public void levelComplete() {
+		GameScreen.get().setState(MapState.Victory);
 		victory=true;
 	}
 
@@ -427,6 +419,8 @@ public class Map extends Group{
 
 	int fails=0;
 	public void levelFailed() {
+		GameScreen.get().setState(MapState.Replaying);
+		GameScreen.scoreKeeper.addDeath();
 		fails++;
 		if(fails==4)GameScreen.get().fairyHelp.showFairyHelp();
 	}

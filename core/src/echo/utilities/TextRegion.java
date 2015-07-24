@@ -34,6 +34,10 @@ public class TextRegion extends Group{
 		this(text,0,0);
 	}
 	
+	public TextRegion(String text, float width) {
+		this(text,0,0,width);
+	}
+	
 	private void setup(String text, float x, float y, float width){
 		setWidth(width);
 		setPosition(x, y);

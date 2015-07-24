@@ -17,6 +17,7 @@ import echo.utilities.TextRegion;
 public class GameScreen extends TannScreen{
 	public static TextRegion topPanel;
 	private static GameScreen self;
+	public static ScoreKeeper scoreKeeper;
 	public static GameScreen get(){
 		if(self==null){
 			self=new GameScreen();
@@ -25,7 +26,6 @@ public class GameScreen extends TannScreen{
 		return self;
 	}
 
-	public static int level=39;
 	public Map currentMap;
 	public FairyHelp fairyHelp;
 	private GameScreen() {
@@ -35,13 +35,9 @@ public class GameScreen extends TannScreen{
 		init();
 		topPanel=new TextRegion("", 0, 0, 170);
 		setupFairyHelp();
-		changeMap(level);
-		currentMap.finishedZooming();
+		changeMap(1, true);
 		stage.addActor(currentMap);
-
 		stage.addActor(topPanel);
-		setState(MapState.Waiting);
-		Gdx.input.setInputProcessor(stage);
 		stage.addListener(new InputListener(){
 			@Override
 			public boolean keyDown(InputEvent event, int keyCode){
@@ -51,6 +47,8 @@ public class GameScreen extends TannScreen{
 				return false;
 			}	
 		});
+		scoreKeeper=new ScoreKeeper();
+		stage.addActor(scoreKeeper);
 	}
 
 	
@@ -70,19 +68,19 @@ public class GameScreen extends TannScreen{
 		switch(state){
 		case Playing:
 		case Waiting:
-			switch(level){
+			switch(currentMap.level){
 			case 0: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nKeep moving right"); break;
 			case 1: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nPress up to jump"); break;
-			default: setPanelText("Level "+(level)); break;
+			default: setPanelText("Level "+(currentMap.level)); break;
 			}
 
 
 			break;
 		case Replaying:
-			setPanelText("Level "+(level)+"\nReplaying\nSpace to retry");
+			setPanelText("Level "+(currentMap.level)+"\nReplaying\nSpace to retry");
 			break;
 		case Victory:
-			setPanelText("Level "+(level)+"\nYou win!\nSpace to continue");
+			setPanelText("Level "+(currentMap.level)+"\nYou win!\nSpace to continue");
 			break;
 		default:
 			break;
@@ -93,17 +91,23 @@ public class GameScreen extends TannScreen{
 		return currentState;
 	}
 
-	public void changeMap(int mapNum){
+	public void changeMap(int mapNum, boolean instant){
 		if(currentMap!=null)currentMap.remove();
+		if(mapNum>Main.totalLevels) mapNum=1;
 		Fairy.setBrightness(Fairy.noHelp);
 		currentMap=new Map(mapNum);
 		currentMap.addDetails();
 		stage.addActor(currentMap);
 		topPanel.toFront();
+		if(instant){
+			currentMap.finishedZooming();
+			setState(MapState.Waiting);
+		}
 	}
 
-	public void nextLevel() {
-		changeMap((++level));
+	public void nextLevel(boolean instant) {
+		changeMap((++currentMap.level), instant);
+		scoreKeeper.toFront();
 		setState(MapState.Waiting);
 	}
 
@@ -121,7 +125,7 @@ public class GameScreen extends TannScreen{
 			zooming=false;
 			camTicker=1;
 			if(in){
-				nextLevel();
+				nextLevel(false);
 				zoomOut(currentMap.portal.getX(Align.center), currentMap.portal.getY(Align.center));
 				fairyHelp.reset();
 			}
@@ -161,6 +165,7 @@ public class GameScreen extends TannScreen{
 	
 	public void update(float delta){
 		if(Menu.active) return;
+		if(getState()==MapState.Playing)GameScreen.scoreKeeper.addTimer(delta);
 		tickCam(delta);
 		stage.act(delta);
 	}
@@ -182,13 +187,19 @@ public class GameScreen extends TannScreen{
 	public void keyPressed(int keyCode) {
 		switch(keyCode){
 		case Keys.NUMPAD_0:
-			nextLevel();
+			nextLevel(true);
 			break;
 		}
 	}
 
+	@Override
+	public void switchTo() {
+	}
 
-
+	@Override
+	public boolean handleEsc() {
+		return false;
+	}
 
 
 }

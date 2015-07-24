@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import echo.Main;
 import echo.utilities.TextRegion;
 
 public class FairyHelp extends TextRegion{
@@ -60,6 +61,7 @@ public class FairyHelp extends TextRegion{
 	boolean accepted;
 	boolean declined;
 	public void accept(){
+		GameScreen.scoreKeeper.addHelp();
 		previouslyAccepted=true;
 		accepted=true;
 		declined=false;

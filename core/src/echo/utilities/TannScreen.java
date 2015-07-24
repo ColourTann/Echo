@@ -19,7 +19,7 @@ public abstract class TannScreen {
 	public Stage stage;
 	protected SpriteBatch batch;
 	protected OrthographicCamera cam;
-	
+
 	protected void init() {
 		cam = new OrthographicCamera();
 		Viewport v = new ScreenViewport(cam);
@@ -30,7 +30,9 @@ public abstract class TannScreen {
 			public boolean keyDown(InputEvent event, int keyCode){
 				switch(keyCode){
 				case Input.Keys.ESCAPE:
-					Main.self.toggleMenu();
+					if(!handleEsc()){
+						Main.self.toggleMenu();
+					}
 					break;
 				}
 				keyPressed(keyCode);
@@ -42,7 +44,8 @@ public abstract class TannScreen {
 	public void listenForInput(){
 		Gdx.input.setInputProcessor(stage);
 	}
-	
+	public abstract boolean handleEsc();
+	public abstract void switchTo();
 	public abstract void draw(float delta);
 	public abstract void update(float delta);
 }

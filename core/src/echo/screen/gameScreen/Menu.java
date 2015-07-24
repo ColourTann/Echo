@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Align;
 
 import echo.Main;
+import echo.screen.levelSelect.LevelSelectScreen;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Draw;
 import echo.utilities.InputBlocker;
@@ -19,7 +20,7 @@ import echo.utilities.Slider;
 import echo.utilities.TextRegion;
 
 public class Menu extends Group{
-	static float w=400, h=300;
+	static float w=400, h=340;
 	public static boolean active;
 	private static Menu self;
 	public static Menu get(){
@@ -30,11 +31,42 @@ public class Menu extends Group{
 	private Menu() {
 		setSize(w, h);
 		setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, Align.center);
-		
-		Slider.SFX.setPosition(getWidth()/2, getHeight()-70, Align.center);
 		addActor(InputBlocker.get());
+		
+		float levelGap= 50;
+		float stateButtonWidth=120;
+		TextRegion levelSelect = new TextRegion("Level Select",stateButtonWidth);
+		
+		levelSelect.setClickAction(new Runnable() {
+			@Override
+			public void run() {
+				Main.self.setScreen(LevelSelectScreen.get());
+				Main.self.toggleMenu();
+				GameScreen.scoreKeeper.deactivate();
+			}
+		});
+		levelSelect.setPosition(levelGap, getHeight()-levelSelect.getHeight()-40);
+		levelSelect.makeMouseable();
+		addActor(levelSelect);
+		
+		TextRegion startSpeedrun = new TextRegion("Restart",stateButtonWidth);
+		startSpeedrun.makeMouseable();
+		startSpeedrun.setClickAction(new Runnable() {
+			@Override
+			public void run() {
+				Main.self.setScreen(GameScreen.get());
+				GameScreen.get().changeMap(1, true);
+				GameScreen.scoreKeeper.activate();
+				Main.self.toggleMenu();
+			}
+		});
+		startSpeedrun.setPosition(getWidth()-levelGap-startSpeedrun.getWidth(), getHeight()-startSpeedrun.getHeight()-40);
+		addActor(startSpeedrun);
+		
+		Slider.SFX.setPosition(getWidth()/2, getHeight()-Slider.SFX.getHeight()-110, Align.center);
 		addActor(Slider.SFX);		
 		int gap =50;
+		int creditsOffset=30;
 		for(int i=0;i<3;i++){
 			String s = "";
 			switch(i){
@@ -55,10 +87,12 @@ public class Menu extends Group{
 					Gdx.net.openURI(uri);
 				}
 			});
-			t.setPosition(getWidth()/2, getHeight()/2-gap*i, Align.center);
+			t.setPosition(getWidth()/2, getHeight()/2-creditsOffset-gap*i, Align.center);
 			t.makeMouseable();
 			addActor(t);
 		}		
+
+		
 	}
 	
 	@Override

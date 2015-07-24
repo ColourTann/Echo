@@ -1,14 +1,12 @@
-package echo.screen;
+package echo.screen.introScreen;
 
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 import echo.Main;
@@ -30,7 +28,7 @@ public class IntroScreen extends TannScreen{
 	public void keyPressed(int keyCode) {
 		switch(keyCode){
 		case Keys.SPACE:
-			Main.self.setScreen(GameScreen.get());
+			skip();
 			break;
 		}
 	}
@@ -81,7 +79,6 @@ public class IntroScreen extends TannScreen{
 		if(fairyTicks<=0){
 			addFairy();
 		}
-		
 		Fairy.setBrightness(3-fairyRate*2);
 	}
 
@@ -110,12 +107,22 @@ public class IntroScreen extends TannScreen{
 				entities.remove(f);
 			}
 		}
-		
 		fairyTicks=(float) (Math.random()*fairyRate);
 	}
 	
 	public void skip(){
 		Main.self.setScreen(GameScreen.get());
+		GameScreen.get().scoreKeeper.activate();
+	}
+
+	@Override
+	public void switchTo() {
+	}
+
+	@Override
+	public boolean handleEsc() {
+		skip();
+		return true;
 	}
 }
 

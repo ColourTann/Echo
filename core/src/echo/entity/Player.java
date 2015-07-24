@@ -113,9 +113,7 @@ public class Player extends Entity{
 		super.act(delta);
 		if(!active)return;
 		if(replay&&!replaying)return;
-		//		System.out.println("player: "+fn++);
 		/* if replaying, take input from list, otherwise record input */
-
 		if(replay){
 			if(inputIndex==inputs.size()){
 				handleCollision(finalCollision);
@@ -229,7 +227,7 @@ public class Player extends Entity{
 	}
 
 	public float getSoundMultiplier() {
-		return multiplier*multiplier*Slider.SFX.getValue()*2;
+		return multiplier*multiplier*Slider.SFX.getValue();
 	}
 
 	private void checkCollisions() {
@@ -300,7 +298,7 @@ public class Player extends Entity{
 	}
 
 	private void touchWall(Tile t) {
-		if(Math.abs(dx)>100)wallSound[(int) (Math.random()*wallSound.length)].play(getSoundMultiplier());
+//		if(Math.abs(dx)>100)wallSound[(int) (Math.random()*wallSound.length)].play(getSoundMultiplier());
 		dx=0;
 	}
 
@@ -405,8 +403,8 @@ public class Player extends Entity{
 
 	public void age(){
 		age++;
-		multiplier*=.7f;
-		multiplier=Math.max(.2f, multiplier);
+		multiplier*=.85f;
+		multiplier=Math.max(.3f, multiplier);
 	}
 
 	public void moveBack() {

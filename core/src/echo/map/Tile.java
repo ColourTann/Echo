@@ -1,13 +1,8 @@
 package echo.map;
 
-import java.util.Arrays;
-
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -64,8 +59,13 @@ public class Tile extends Actor implements CollisionHandler{
 	TextureRegion decal;
 	boolean decalBlock;
 	boolean spikeRotate;
+	float spikeGrace=8;
 	public Tile(int x, int y, TerrainType type) {
+		setPosition(x*tileWidth,y*tileHeight);
 		collider=new Rectangle(x*tileWidth,y*tileHeight,tileWidth,visibleHeight);
+		if(type==TerrainType.spike){
+			collider=new Rectangle(x*tileWidth+spikeGrace,y*tileHeight+spikeGrace-Player.extraHeight,tileWidth-spikeGrace*2,visibleHeight-spikeGrace*2);
+		}
 		this.x=x;this.y=y;
 		this.type=type;
 		switch(type){
@@ -96,7 +96,7 @@ public class Tile extends Actor implements CollisionHandler{
 	private void setupSpikeTexture() {
 		switch(check()){
 		case base:
-			texture=spikeBase;
+			texture=spikeBase; spikeRotate=true;
 			break;
 		case hLeft:
 			texture=spikeLeft;
@@ -128,17 +128,18 @@ public class Tile extends Actor implements CollisionHandler{
 		Tile up = getTile(0, -2);
 		Tile down = getTile(0, 2);
 		
-		boolean leftSpike=left!=null&&left.type==TerrainType.spike;
-		boolean rightSpike=right!=null&&right.type==TerrainType.spike;
-		boolean upSpike=up!=null&&up.type==TerrainType.spike&&!up.hasSpikeLR();
-		boolean downSpike=down!=null&&down.type==TerrainType.spike&&!down.hasSpikeLR();  //ugh//
-
+		boolean leftSpike=left!=null&&left.type==TerrainType.spike&&!left.hasSpikeUD();
+		boolean rightSpike=right!=null&&right.type==TerrainType.spike&&!right.hasSpikeUD();
+		boolean upSpike=up!=null&&up.type==TerrainType.spike;
+		boolean downSpike=down!=null&&down.type==TerrainType.spike;
+		
+		
+		if(upSpike&&downSpike)return SpikeType.vMid;
+		if(downSpike)return SpikeType.vTop;
+		if(upSpike)return SpikeType.vBot;
 		if(leftSpike&&rightSpike)return SpikeType.hMid;
 		if(leftSpike)return SpikeType.hRight;
 		if(rightSpike)return SpikeType.hLeft;
-		if(upSpike&&downSpike)return SpikeType.vMid;
-		if(downSpike)return SpikeType.vTop;
-		if(upSpike)return SpikeType.vBot; 		
 		return SpikeType.base;
 	}
 	
@@ -148,10 +149,18 @@ public class Tile extends Actor implements CollisionHandler{
 		return (left!=null&&left.type==TerrainType.spike)||(right!=null&&right.type==TerrainType.spike);
 	}
 	
+	private boolean hasSpikeUD(){
+		Tile up = getTile(0, -2);
+		Tile down = getTile(0, 2);
+		return (up!=null&&up.type==TerrainType.spike)||(down!=null&&down.type==TerrainType.spike);
+	}
+	
 	Tile getTile(int dx, int dy){
 		int newX=x+dx; int newY=y+dy;
 		if(newX<0||newX>=Main.tilesAcross||
-				newY<0||newY>=Main.tilesDown)return null;
+				newY<0||newY>=Main.tilesDown){
+			return null;
+		}
 		return GameScreen.get().currentMap.tilesArray[newX][newY];
 	}
 	
@@ -241,10 +250,10 @@ public class Tile extends Actor implements CollisionHandler{
 		batch.setColor(Color.WHITE);
 		float bonusY=((type==TerrainType.spike)?-Player.extraHeight:0);
 		if(spikeRotate){
-			Draw.drawRotatedScaled(batch, texture, collider.x+getWidth(), collider.y+bonusY+Tile.tileHeight*2, 1, 1, (float)-Math.PI/2);
+			Draw.drawRotatedScaled(batch, texture, getX()+getWidth(), getY()+bonusY+Tile.tileHeight*2, 1, 1, (float)-Math.PI/2);
 		}
 		else if(texture!=null){
-			Draw.draw(batch, texture, collider.x, collider.y+bonusY);
+			Draw.draw(batch, texture, getX(), getY()+bonusY);
 		}
 	}
 	

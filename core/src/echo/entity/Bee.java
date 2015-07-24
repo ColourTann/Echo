@@ -15,6 +15,7 @@ import echo.map.Tile;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Noise;
+import echo.utilities.Slider;
 
 public class Bee extends Entity{
 	public enum Direction{RIGHT, DOWN}
@@ -73,7 +74,7 @@ public class Bee extends Entity{
 				if(!prime) return;
 				addAction(Actions.delay(.4f, Actions.run( new Runnable() {
 					public void run() {
-						move[moved?1:0].play();
+						move[moved?1:0].play(Slider.SFX.getValue());
 					}
 				})));
 				
