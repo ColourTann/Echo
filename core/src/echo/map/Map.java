@@ -175,12 +175,13 @@ public class Map extends Group{
 
 	public void act(float delta){
 		if(transitioning)return;
+		fairyTicks-=delta;
+		if(fairyTicks<=0){
+			addFairy();
+			fairyTicks=(float) (Math.random()*(helpRequested?.8f:4));
+		}
 		if(currentPlayer.active&&!replaying){
-			fairyTicks-=delta;
-			if(fairyTicks<=0){
-				addFairy();
-				fairyTicks=(float) (Math.random()*(helpRequested?.8f:4));
-			}
+			
 		}
 		super.act(delta);
 	}

@@ -113,11 +113,10 @@ public class Fairy extends Entity{
 	}
 
 	public static float noHelp=1.5f;
-	public static float help =5;
+	public static float help =4.5f;
 	private static float scale = 1;
 	public static void setBrightness(float scale){
 		Fairy.scale=scale;
-		
 	}
 
 	public void draw(Batch batch, float parentAlpha){

@@ -42,27 +42,26 @@ public class FairyHelp extends TextRegion{
 			public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor){
 				if(Gdx.input.isButtonPressed(0))return;
 				if(accepted)return;
-				if(declined||previouslyAccepted){
+			
 					showFairyHelp();
-				}
+			
 			}
 			public void exit(InputEvent event, float x, float y, int pointer, Actor toActor){
 				if(toActor!=null)return;
 				if(accepted)return;
-				if(declined||previouslyAccepted){
+			
 					hideFairyHelp();
-				}
+				
 			}
 		});
 	
+	
 	}
 
-	boolean previouslyAccepted;
 	boolean accepted;
 	boolean declined;
 	public void accept(){
 		GameScreen.scoreKeeper.addHelp();
-		previouslyAccepted=true;
 		accepted=true;
 		declined=false;
 		GameScreen.get().currentMap.requestHelp();
@@ -82,14 +81,13 @@ public class FairyHelp extends TextRegion{
 	
 	public void showFairyHelp(){
 		if(accepted)return;
+		toFront();
 		addAction(Actions.moveTo(getX(), normalY, .3f, Interpolation.pow2Out));
-		GameScreen.get().stage.addActor(this);
 	}
 
 	public void hideFairyHelp(){
-		toFront();
 		float tY=hiddenY;
-		if(!accepted&&(declined||previouslyAccepted))tY=pokingY;
+		if(!accepted)tY=pokingY;
 		addAction(Actions.moveTo(getX(), tY, .3f, Interpolation.pow2Out));
 	}
 

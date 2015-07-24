@@ -49,6 +49,7 @@ public class GameScreen extends TannScreen{
 		});
 		scoreKeeper=new ScoreKeeper();
 		stage.addActor(scoreKeeper);
+		stage.addActor(fairyHelp);
 	}
 
 	
@@ -69,8 +70,8 @@ public class GameScreen extends TannScreen{
 		case Playing:
 		case Waiting:
 			switch(currentMap.level){
-			case 0: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nKeep moving right"); break;
-			case 1: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nPress up to jump"); break;
+			case 1: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nKeep moving right"); break;
+			case 2: setPanelText("Version "+Main.version+"\nLevel 1\nTurn your sound up!\nPress up to jump"); break;
 			default: setPanelText("Level "+(currentMap.level)); break;
 			}
 
@@ -103,6 +104,7 @@ public class GameScreen extends TannScreen{
 			currentMap.finishedZooming();
 			setState(MapState.Waiting);
 		}
+		fairyHelp.hideFairyHelp();
 	}
 
 	public void nextLevel(boolean instant) {
@@ -194,6 +196,7 @@ public class GameScreen extends TannScreen{
 
 	@Override
 	public void switchTo() {
+		Fairy.setBrightness(Fairy.noHelp);
 	}
 
 	@Override
