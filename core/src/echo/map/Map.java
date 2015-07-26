@@ -63,7 +63,7 @@ public class Map extends Group{
 		loadMap(levelNum+"");
 		setupBorders();
 		makePlayer();
-		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.arachGround, 0));
+		setColor(Colours.yesIReallyWantToUseColourWithAlpha(Colours.darkBlueGreen, 0));
 	}
 
 	public void addFairy() {

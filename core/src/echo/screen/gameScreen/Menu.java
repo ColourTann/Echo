@@ -34,22 +34,10 @@ public class Menu extends Group{
 		addActor(InputBlocker.get());
 		
 		float levelGap= 50;
-		float stateButtonWidth=120;
-		TextRegion levelSelect = new TextRegion("Level Select",stateButtonWidth);
+		float stateButtonWidth=130;
 		
-		levelSelect.setClickAction(new Runnable() {
-			@Override
-			public void run() {
-				Main.self.setScreen(LevelSelectScreen.get());
-				Main.self.toggleMenu();
-				GameScreen.scoreKeeper.deactivate();
-			}
-		});
-		levelSelect.setPosition(levelGap, getHeight()-levelSelect.getHeight()-40);
-		levelSelect.makeMouseable();
-		addActor(levelSelect);
-		
-		TextRegion startSpeedrun = new TextRegion("Restart",stateButtonWidth);
+				
+		TextRegion startSpeedrun = new TextRegion("Start Speedrun",stateButtonWidth);
 		startSpeedrun.makeMouseable();
 		startSpeedrun.setClickAction(new Runnable() {
 			@Override
@@ -60,7 +48,21 @@ public class Menu extends Group{
 				Main.self.toggleMenu();
 			}
 		});
-		startSpeedrun.setPosition(getWidth()-levelGap-startSpeedrun.getWidth(), getHeight()-startSpeedrun.getHeight()-40);
+		startSpeedrun.setPosition(levelGap, getHeight()-startSpeedrun.getHeight()-40);
+		
+		TextRegion levelSelect = new TextRegion("Level Select",stateButtonWidth);
+		levelSelect.setClickAction(new Runnable() {
+			@Override
+			public void run() {
+				Main.self.setScreen(LevelSelectScreen.get());
+				Main.self.toggleMenu();
+				GameScreen.scoreKeeper.deactivate();
+			}
+		});
+		levelSelect.setPosition(getWidth()-levelGap-startSpeedrun.getWidth(), getHeight()-levelSelect.getHeight()-40);
+		levelSelect.makeMouseable();
+		addActor(levelSelect);
+		
 		addActor(startSpeedrun);
 		
 		Slider.SFX.setPosition(getWidth()/2, getHeight()-Slider.SFX.getHeight()-110, Align.center);

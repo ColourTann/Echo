@@ -11,8 +11,8 @@ public class ButtonBorder{
 	static TextureRegion corner = Main.atlas.findRegion("interface/corner");
 	static TextureRegion edge = Main.atlas.findRegion("interface/edge");
 	static TextureRegion frill = Main.atlas.findRegion("interface/frill");
-	static final Color bgCol = Colours.make(35, 45, 50); 
-	static final Color highlightgCol = Colours.make(135, 145, 150);
+	static final Color bgCol = Colours.darkBlueGreen; 
+	static final Color highlightgCol = Colours.mediumBlueGreen;
 	static final float gap =3;
 	
 	public static void drawBorder(Batch batch, float x, float y, float width, float height, boolean highlight){

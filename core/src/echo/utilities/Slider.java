@@ -10,8 +10,8 @@ import com.badlogic.gdx.utils.Align;
 
 
 public class Slider extends Actor{
-	static float w=250,h=30, gap=2;;
-	public static Slider SFX=  new Slider("SFX", .5f, Colours.brown, Colours.lightGrey);
+	static float w=250,h=30, gap=4;
+	public static Slider SFX=  new Slider("SFX", .5f, Colours.colds4[1], Colours.colds4[2]);
 	
 	
 	private float value;

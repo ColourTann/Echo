@@ -83,7 +83,7 @@ public class TextRegion extends Group{
 	}
 	
 	public void clipToTopLeft(){
-		setPosition(10, Gdx.graphics.getHeight()-getHeight()-10);
+		setPosition(10, Gdx.graphics.getHeight()-getHeight());
 	}
 	
 	public void draw(Batch batch, float parentAlpha){

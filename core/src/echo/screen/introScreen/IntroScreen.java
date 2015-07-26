@@ -51,7 +51,7 @@ public class IntroScreen extends TannScreen{
 	@Override
 	public void draw(float delta) {
 		batch.begin();
-		batch.setColor(Colours.arachGround);
+		batch.setColor(Colours.darkBlueGreen);
 		Draw.fillRectangle(batch, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		batch.setColor(1,1,1,1);
 		Draw.drawCentered(batch, logo, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);

@@ -4,7 +4,9 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 
 import echo.Main;
+import echo.utilities.ButtonBorder;
 import echo.utilities.Font;
+import echo.utilities.TextRegion;
 
 public class ScoreKeeper extends Group{
 	private float currentTime;
@@ -16,6 +18,7 @@ public class ScoreKeeper extends Group{
 		active=true;
 		reset();
 		toFront();
+		setSize(200, 150);
 	}
 	
 	public void deactivate(){
@@ -44,6 +47,7 @@ public class ScoreKeeper extends Group{
 	public void draw(Batch batch, float parentAlpha) {
 		if(!active)return;
 		super.draw(batch, parentAlpha);
+		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), false);
 		int ms = (int) ((currentTime*100)%100);
 		int seconds =(int) (currentTime);
 		int minutes = seconds/60;

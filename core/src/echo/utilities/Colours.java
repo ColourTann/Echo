@@ -1,36 +1,37 @@
 package echo.utilities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 
 public class Colours {
 
 	// DB16 Palette//
-	public static final Color dark = make(20, 12, 28);
-	public static final Color darkRed = make(68, 36, 52);
-	public static final Color darkBlue = make(48, 52, 109);
-	public static final Color darkGrey = make(78, 74, 78);
-	public static final Color brown = make(133, 76, 48);
-	public static final Color green = make(52, 101, 36);
-	public static final Color red = make(208, 70, 72);
-	public static final Color grey = make(117, 113, 97);
-	public static final Color blue = make(89, 125, 206);
-	public static final Color orange = make(210, 125, 44);
-	public static final Color lightGrey = make(133, 149, 161);
-	public static final Color lightGreen = make(109, 170, 44);
-	public static final Color pink = make(210, 170, 153);
-	public static final Color lightBlue = make(109, 194, 202);
-	public static final Color yellow = make(218, 212, 94);
-	public static final Color light = make(222, 238, 214);
-
-	public static Color[] colourList = new Color[] { dark, darkRed, darkBlue,
-			darkGrey, brown, green, red, grey, blue, orange, lightGrey,
-			lightGreen, pink, lightBlue, yellow, light };
-	public static final Color arachGround= make(22,26,40);
-
-	public static Color randomColor() {
-		return colourList[(int) (Math.random() * colourList.length)];
+	static Pixmap p;
+	
+	static{
+		p=Draw.getPix("palette");
 	}
+	public static final Color light = new Color(p.getPixel(0, 4));
+	public static final Color darkBlueGreen = new Color(p.getPixel(3, 1));
+	public static final Color mediumBlueGreen = new Color(p.getPixel(1, 1));
+	public static final Color darkGreen = new Color(p.getPixel(3, 2));
+	public static final Color Green = new Color(p.getPixel(2, 2));
+	public static final Color mediumGreen = new Color(p.getPixel(1, 2));
+	public static final Color lightGreen = new Color(p.getPixel(0, 2));
+	
+	public static final Color[] colds4 = new Color[]{palette(3, 4), palette(2, 4), palette(1, 4), palette(0, 4)};
+	
+	private static Color palette(int x,int y){
+		return new Color(p.getPixel(x, y));
+	}
+
+	public static void setupPalette(){
+
+	}
+
 
 	public static Color yesIReallyWantToUseColourWithAlpha(Color c, float alpha) {
 		return new Color(c.r, c.g, c.b, alpha);

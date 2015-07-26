@@ -15,8 +15,9 @@ public class FairyHelp extends TextRegion{
 	static float hiddenY;
 	static float pokingY;
 	static float normalY;
+	static final float fairyX=250;
 	public FairyHelp() {
-		super("The fairies offer their assistance", Gdx.graphics.getWidth()/2, 0, 300);
+		super("The fairies offer their assistance", fairyX, 0, 300);
 		normalY=Gdx.graphics.getHeight()-getHeight();
 		hiddenY=Gdx.graphics.getHeight()+getHeight();
 		pokingY=hiddenY-10;

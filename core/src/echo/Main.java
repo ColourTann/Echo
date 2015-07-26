@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -16,6 +18,7 @@ import echo.screen.gameScreen.GameScreen;
 import echo.screen.gameScreen.Menu;
 import echo.screen.introScreen.IntroScreen;
 import echo.screen.levelSelect.LevelSelectScreen;
+import echo.utilities.Font;
 import echo.utilities.TannScreen;
 
 
@@ -29,11 +32,13 @@ public class Main extends ApplicationAdapter {
 	public static double ticks;
 	public static Stage menuStage;
 	private TannScreen currentScreen;
-	
+	private SpriteBatch extraBatch;
+	public static boolean debug=true;
 
 	public static int totalLevels=28;
 	@Override
 	public void create () {
+		extraBatch=new SpriteBatch();
 		self=this;
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"));
 		Map.setupMapParser();
@@ -81,6 +86,11 @@ public class Main extends ApplicationAdapter {
 		if(Menu.active){
 			menuStage.draw();
 		}
+		if(debug){
+		extraBatch.begin();
+		drawFPS(extraBatch);
+		extraBatch.end();
+		}
 	}
 
 
@@ -92,6 +102,10 @@ public class Main extends ApplicationAdapter {
 		currentScreen.update(delta);
 		ticks+=Gdx.graphics.getDeltaTime();
 		Entity.update(delta);
+	}
+	
+	public void drawFPS(Batch batch){
+		Font.font.draw(batch, "fps: "+Gdx.graphics.getFramesPerSecond(), 0, 100);
 	}
 	
 	
