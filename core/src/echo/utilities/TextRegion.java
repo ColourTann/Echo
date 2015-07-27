@@ -21,6 +21,7 @@ public class TextRegion extends Group{
 	GlyphLayout layout = new GlyphLayout();
 	Runnable clickAction;
 	ClickListener cl;
+	int textAlign= Align.center;
 	public TextRegion(String text, float x, float y, float width) {
 		setup(text, x, y, width);
 	}
@@ -62,6 +63,11 @@ public class TextRegion extends Group{
 		super.act(delta);
 	}
 	
+	
+	public void setTextStyle(int align){
+		this.textAlign=align;
+	}
+	
 	boolean highlight;
 	public void makeMouseable(){
 		addListener(new InputListener() {
@@ -82,8 +88,14 @@ public class TextRegion extends Group{
 		setHeight(layout.height+gap*2);
 	}
 	
-	public void clipToTopLeft(){
-		setPosition(10, Gdx.graphics.getHeight()-getHeight());
+	public void clipTo(int align){
+		switch(align){
+		case Align.topLeft:
+			setPosition(0, Gdx.graphics.getHeight()-getHeight());
+			break;
+		case Align.topRight:
+			setPosition(Gdx.graphics.getWidth()-getWidth(), Gdx.graphics.getHeight()-getHeight());
+		}
 	}
 	
 	public void draw(Batch batch, float parentAlpha){
@@ -91,6 +103,6 @@ public class TextRegion extends Group{
 		batch.setColor(getColor());
 		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), highlight);
 		Font.font.setColor(textCol.r, textCol.g, textCol.b, getColor().a);
-		Font.font.draw(batch, text, getX()+gap, getY()+getHeight()-gap, wrapWidth, Align.center, true);
+		Font.font.draw(batch, text, getX()+gap, getY()+getHeight()-gap, wrapWidth, textAlign, true);
 	}	
 }

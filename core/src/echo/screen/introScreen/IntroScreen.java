@@ -68,14 +68,13 @@ public class IntroScreen extends TannScreen{
 	float fairyTicks =0;
 	@Override
 	public void update(float delta) {
-		stage.act(delta);
-		fairyTicks-=delta;
-		fairyRate-=delta*.2f;
 		if(fairyRate<-.5f){
 			skip();
 		}
+		stage.act(delta);
+		fairyTicks-=delta;
+		fairyRate-=delta*.2f;
 		if(fairyRate<=0)return;
-		
 		if(fairyTicks<=0){
 			addFairy();
 		}
@@ -110,19 +109,26 @@ public class IntroScreen extends TannScreen{
 		fairyTicks=(float) (Math.random()*fairyRate);
 	}
 	
+	boolean skipped;
 	public void skip(){
-		Main.self.setScreen(GameScreen.get());
-		GameScreen.get().scoreKeeper.activate();
+		if(skipped)return;
+		skipped=true;
+		Main.self.setScreen(GameScreen.get(), TransitionType.SlideLeft);
+		GameScreen.scoreKeeper.activate();
 	}
 
 	@Override
-	public void switchTo() {
+	public void activate() {
 	}
 
 	@Override
 	public boolean handleEsc() {
 		skip();
 		return true;
+	}
+
+	@Override
+	public void deactivate() {
 	}
 }
 

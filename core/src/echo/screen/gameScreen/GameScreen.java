@@ -60,7 +60,7 @@ public class GameScreen extends TannScreen{
 
 	public void setPanelText(String text){
 		topPanel.setText(text);
-		topPanel.clipToTopLeft();
+		topPanel.clipTo(Align.topLeft);
 	}
 
 	private MapState currentState;
@@ -195,13 +195,17 @@ public class GameScreen extends TannScreen{
 	}
 
 	@Override
-	public void switchTo() {
+	public void activate() {
 		Fairy.setBrightness(Fairy.noHelp);
 	}
 
 	@Override
 	public boolean handleEsc() {
 		return false;
+	}
+
+	@Override
+	public void deactivate() {
 	}
 
 

@@ -87,6 +87,7 @@ public class FairyHelp extends TextRegion{
 	}
 
 	public void hideFairyHelp(){
+		toFront();
 		float tY=hiddenY;
 		if(!accepted)tY=pokingY;
 		addAction(Actions.moveTo(getX(), tY, .3f, Interpolation.pow2Out));

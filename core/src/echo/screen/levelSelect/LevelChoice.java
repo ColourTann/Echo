@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.InputListener;
 import echo.Main;
 import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Draw;
+import echo.utilities.TannScreen.TransitionType;
 
 public class LevelChoice extends Actor{
 	
@@ -27,7 +28,7 @@ public class LevelChoice extends Actor{
 		setSize(region.getRegionWidth()*scale, region.getRegionHeight()*scale);
 		addListener(new InputListener(){
 			public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-				Main.self.setScreen(GameScreen.get());
+				Main.self.setScreen(GameScreen.get(), TransitionType.SlideRight);
 				GameScreen.get().changeMap(levelNum,true);
 				return false;
 			}

@@ -18,6 +18,7 @@ import echo.utilities.Draw;
 import echo.utilities.InputBlocker;
 import echo.utilities.Slider;
 import echo.utilities.TextRegion;
+import echo.utilities.TannScreen.TransitionType;
 
 public class Menu extends Group{
 	static float w=400, h=340;
@@ -42,7 +43,7 @@ public class Menu extends Group{
 		startSpeedrun.setClickAction(new Runnable() {
 			@Override
 			public void run() {
-				Main.self.setScreen(GameScreen.get());
+				Main.self.setScreen(GameScreen.get(), TransitionType.SlideRight);
 				GameScreen.get().changeMap(1, true);
 				GameScreen.scoreKeeper.activate();
 				Main.self.toggleMenu();
@@ -54,7 +55,7 @@ public class Menu extends Group{
 		levelSelect.setClickAction(new Runnable() {
 			@Override
 			public void run() {
-				Main.self.setScreen(LevelSelectScreen.get());
+				Main.self.setScreen(LevelSelectScreen.get(), TransitionType.SlideLeft);
 				Main.self.toggleMenu();
 				GameScreen.scoreKeeper.deactivate();
 			}

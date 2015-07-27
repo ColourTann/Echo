@@ -33,8 +33,8 @@ public class LevelSelectScreen extends TannScreen{
 	public void keyPressed(int keyCode) {
 	}
 
-	@Override
-	public void draw(float delta) {
+	
+	protected void draw(float delta) {
 		batch.begin();
 		batch.setColor(Colours.darkBlueGreen);
 		Draw.fillRectangle(batch, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
@@ -49,12 +49,16 @@ public class LevelSelectScreen extends TannScreen{
 	}
 
 	@Override
-	public void switchTo() {
+	public void activate() {
 	}
 
 	@Override
 	public boolean handleEsc() {
 		return false;
+	}
+
+	@Override
+	public void deactivate() {
 	}
 
 	

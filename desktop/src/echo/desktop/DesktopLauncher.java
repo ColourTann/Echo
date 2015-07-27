@@ -16,12 +16,13 @@ public class DesktopLauncher {
 		config.foregroundFPS=60;
 		config.width=800;
 		config.height=640;
+		
 		Settings settings = new Settings();
 		settings.combineSubdirectories = true;
 		TexturePacker.process(settings, "../images",
 				"../core/assets", "atlas_image");
-		
-//		config.addIcon("shiptiny.png", FileType.Internal);
+		config.title="Echo";
+		config.addIcon("icon.png", FileType.Internal);
 
 		
 		new LwjglApplication(new Main(), config);

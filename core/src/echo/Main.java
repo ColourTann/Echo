@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -20,6 +21,7 @@ import echo.screen.introScreen.IntroScreen;
 import echo.screen.levelSelect.LevelSelectScreen;
 import echo.utilities.Font;
 import echo.utilities.TannScreen;
+import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
@@ -31,9 +33,10 @@ public class Main extends ApplicationAdapter {
 	public static Main self;
 	public static double ticks;
 	public static Stage menuStage;
+	private TannScreen prevScreen;
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
-	public static boolean debug=true;
+	public static boolean debug=false;
 
 	public static int totalLevels=28;
 	@Override
@@ -54,14 +57,28 @@ public class Main extends ApplicationAdapter {
 			}
 		});
 		setScreen(new IntroScreen());
-//		setScreen(LevelSelectScreen.get());
+		//		setScreen(LevelSelectScreen.get());
 	}
 
-	
+
 	public void setScreen(TannScreen screen){
+		setScreen(screen, null);
+	}
+
+
+	public void setScreen(TannScreen screen, TransitionType type){
+		if(screen==currentScreen)return;
+		prevScreen=currentScreen;
 		currentScreen=screen;
+		if(type==null){
+			currentScreen.center();
+		}
+		if(type!=null){
+			if(prevScreen!=null)prevScreen.transition(type, .35f, Interpolation.pow3Out, false);
+			currentScreen.transition(type, .35f, Interpolation.pow3Out, true);
+		}
 		screen.listenForInput();
-		screen.switchTo();
+		screen.activate();
 	}
 
 
@@ -79,17 +96,18 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
+		Gdx.gl.glClearColor(0, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Main.frameSpeed);
-		currentScreen.draw(Main.frameSpeed);
+		if(prevScreen!=null)prevScreen.doDraw(Main.frameSpeed);
+		currentScreen.doDraw(Main.frameSpeed);
 		if(Menu.active){
 			menuStage.draw();
 		}
 		if(debug){
-		extraBatch.begin();
-		drawFPS(extraBatch);
-		extraBatch.end();
+			extraBatch.begin();
+			drawFPS(extraBatch);
+			extraBatch.end();
 		}
 	}
 
@@ -99,19 +117,21 @@ public class Main extends ApplicationAdapter {
 			menuStage.act();
 			return;
 		}
-		currentScreen.update(delta);
+		TannScreen previous =prevScreen;
+		currentScreen.updateAll(delta);
+		if(previous!=null)previous.updateAll(delta);
 		ticks+=Gdx.graphics.getDeltaTime();
 		Entity.update(delta);
 	}
-	
+
 	public void drawFPS(Batch batch){
 		Font.font.draw(batch, "fps: "+Gdx.graphics.getFramesPerSecond(), 0, 100);
 	}
-	
-	
-	
 
 
 
-	
+
+
+
+
 }
