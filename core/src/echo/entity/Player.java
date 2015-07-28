@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,6 +18,7 @@ import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Slider;
+import echo.utilities.Sounds;
 
 public class Player extends Entity{
 	/*bytes*/
@@ -29,23 +29,7 @@ public class Player extends Entity{
 	static final byte byteJumpPressed= 	1<<3;
 	static final byte byteR= 	1<<4;
 	/*sounds*/
-	static final Sound[] jumpSound = new Sound[4];
-	static final Sound[] landSound = new Sound[3];
-	static final Sound[] wallSound = new Sound[1];
-	static{
-		for(int i=0;i<=0;i++){
-			wallSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/wall"+i+".wav"));
-		}
-		for(int i=0;i<=2;i++){
-			landSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/land"+i+".wav"));
-		}
-		for(int i=0;i<=3;i++){
-			jumpSound[i]=Gdx.audio.newSound(Gdx.files.internal("sfx/jump"+i+".wav"));
-		}
-	}
-
-	static final Sound dead = Gdx.audio.newSound(Gdx.files.internal("sfx/dead.wav"));
-	static final Sound win = Gdx.audio.newSound(Gdx.files.internal("sfx/win.wav"));
+	
 	/*constants*/
 	static final float animSpd=.04f;
 	static final float deathDelay=.7f;
@@ -220,7 +204,7 @@ public class Player extends Entity{
 
 	private void jump() {
 		if(jumpKindness<0||!active)return;
-		jumpSound[(int) (Math.random()*jumpSound.length)].play(getSoundMultiplier());
+		Sounds.jumpSound[(int) (Math.random()*Sounds.jumpSound.length)].play(getSoundMultiplier());
 		dy = jumpStrength;
 		airTime=0;
 		jumping=true;
@@ -320,7 +304,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
-			if(active) landSound[(int) (Math.random()*landSound.length)].play(getSoundMultiplier());
+			if(active) Sounds.landSound[(int) (Math.random()*Sounds.landSound.length)].play(getSoundMultiplier());
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -373,13 +357,13 @@ public class Player extends Entity{
 
 	public void die() {
 		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
-		dead.play(getSoundMultiplier());
+		Sounds.dead.play(getSoundMultiplier());
 		endLife();
 	}
 
 	public void win() {
 		victory=true;
-		win.play(getSoundMultiplier());
+		Sounds.win.play(getSoundMultiplier());
 		GameScreen.get().currentMap.levelComplete();
 		endLife();
 	}

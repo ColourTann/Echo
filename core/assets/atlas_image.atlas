@@ -146,14 +146,14 @@ player/run
   index: -1
 
 atlas_image2.png
-size: 512,512
+size: 512,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 sagdclogo
   rotate: false
   xy: 2, 2
-  size: 300, 459
-  orig: 300, 459
+  size: 365, 560
+  orig: 365, 560
   offset: 0, 0
   index: -1

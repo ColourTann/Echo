@@ -21,6 +21,7 @@ import echo.screen.gameScreen.GameScreen;
 import echo.screen.gameScreen.Menu;
 import echo.screen.introScreen.IntroScreen;
 import echo.screen.levelSelect.LevelSelectScreen;
+import echo.utilities.Colours;
 import echo.utilities.Font;
 import echo.utilities.Slider;
 import echo.utilities.TannScreen;
@@ -28,7 +29,7 @@ import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.9f;
+	public static final float version = 0.92f;
 	public static float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
@@ -40,13 +41,14 @@ public class Main extends ApplicationAdapter {
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
 	public static boolean debug=false;
-	public static boolean html=false;
+	public static boolean html=true;
 	Stage mainStage;
-	public static int totalLevels=28;
+	public static int totalLevels=25;
 	public static Music ambience;
 	public static Music intro;
 	@Override
 	public void create () {
+
 		ambience=Gdx.audio.newMusic(Gdx.files.internal("sfx/ambience.ogg"));
 		intro = Gdx.audio.newMusic(Gdx.files.internal("sfx/intro.ogg"));
 		startIntroSound();
@@ -68,6 +70,8 @@ public class Main extends ApplicationAdapter {
 		});
 		setScreen(new IntroScreen());
 		//		setScreen(LevelSelectScreen.get());
+		
+		Font.setup();
 	}
 
 	public void updateMusicVolume(){
@@ -119,7 +123,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 1, 1, 1);
+		Gdx.gl.glClearColor(Colours.darkBlueGreen.r, Colours.darkBlueGreen.g, Colours.darkBlueGreen.b, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		update(Main.frameSpeed);
 		if(prevScreen!=null)prevScreen.doDraw(Main.frameSpeed);

@@ -1,7 +1,5 @@
 package echo.entity;
 
-import com.badlogic.gdx.math.Rectangle;
-
 import echo.entity.Entity.CollisionResult;
 
 public interface CollisionHandler {

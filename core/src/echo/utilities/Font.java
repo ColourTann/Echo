@@ -8,12 +8,17 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 
 public class Font {
-	public static BitmapFont font = new BitmapFont(Gdx.files.internal("font.fnt"));
-	public static BitmapFont largeFont = new BitmapFont(Gdx.files.internal("largefont.fnt"));
-	public static BitmapFont hugeFont = new BitmapFont(Gdx.files.internal("hugefont.fnt"));
-	public static GlyphLayout largeLayout = new GlyphLayout(largeFont, "");
-	static{
-		
+	public static BitmapFont font;
+	public static BitmapFont largeFont;
+	public static BitmapFont hugeFont;
+	public static GlyphLayout largeLayout;
+
+	
+	public static void setup(){
+		font  = new BitmapFont(Gdx.files.internal("font.fnt"));
+		largeFont  = new BitmapFont(Gdx.files.internal("largefont.fnt"));
+		hugeFont = new BitmapFont(Gdx.files.internal("hugefont.fnt"));
+		largeLayout= new GlyphLayout(largeFont, "");
 		font.setUseIntegerPositions(true);
 	}
 	

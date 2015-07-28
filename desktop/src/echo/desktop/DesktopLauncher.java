@@ -19,7 +19,7 @@ public class DesktopLauncher {
 		
 		Settings settings = new Settings();
 		settings.combineSubdirectories = true;
-		TexturePacker.process(settings, "../images", "../core/assets", "atlas_image");
+//		TexturePacker.process(settings, "../images", "../core/assets", "atlas_image");
 		config.title="Echo";
 		config.addIcon("icon.png", FileType.Internal);
 

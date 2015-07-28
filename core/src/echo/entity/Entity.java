@@ -38,7 +38,6 @@ public abstract class Entity extends Actor implements CollisionHandler{
 		if(mask==null)mask = Main.atlas.findRegion("normalmask");
 		return mask;
 	}
-	private static AtlasRegion reverseMask;
 	public static AtlasRegion getReverseMask(){
 		if(mask==null)mask = Main.atlas.findRegion("mask");
 		return mask;

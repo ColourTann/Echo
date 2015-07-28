@@ -1,25 +1,20 @@
 package echo.entity;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.utils.Align;
-
 import echo.Main;
 import echo.map.Tile;
-import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Noise;
 import echo.utilities.Slider;
+import echo.utilities.Sounds;
 
 public class Bee extends Entity{
 	public enum Direction{RIGHT, DOWN}
-	static final Sound[] move = new Sound[]{Gdx.audio.newSound(Gdx.files.internal("sfx/beemove0.wav")), Gdx.audio.newSound(Gdx.files.internal("sfx/beemove1.wav"))};
+	
 	static float stayTime=1;
 	static float moveTime=1.5f;
 	static float moveAmount=Tile.tileWidth*9;
@@ -74,7 +69,7 @@ public class Bee extends Entity{
 				if(!prime) return;
 				addAction(Actions.delay(.4f, Actions.run( new Runnable() {
 					public void run() {
-						move[moved?1:0].play(Slider.SFX.getValue());
+						Sounds.beeMove[moved?1:0].play(Slider.SFX.getValue());
 					}
 				})));
 				

@@ -13,8 +13,6 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Align;
 
@@ -27,10 +25,11 @@ import echo.entity.Player;
 import echo.entity.Bee.Direction;
 import echo.screen.gameScreen.GameScreen;
 import echo.screen.gameScreen.Menu;
-import echo.utilities.ButtonBorder;
+import echo.screen.victoryScreen.VictoryScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
-import echo.utilities.Font;
+import echo.utilities.Sounds;
+import echo.utilities.TannScreen.TransitionType;
 
 public class Map extends Group{
 	public enum MapState{Waiting, Playing, Replaying, Victory};
@@ -39,9 +38,10 @@ public class Map extends Group{
 	Sound[] foot = new Sound[2];
 	TerrainType(){
 		for(int i=0;i<2;i++){
-			FileHandle f = Gdx.files.internal("sfx/"+this+"foot"+i+".wav");
+			String s ="sfx/"+this+"foot"+i+".wav";
+			FileHandle f = Gdx.files.internal(s);
 			if(!f.exists()) break;
-			foot[i]=Gdx.audio.newSound(f);
+			foot[i]=Sounds.makeSound(s);
 		}
 	}
 	}
@@ -231,6 +231,14 @@ public class Map extends Group{
 
 	boolean transitioning;
 	private void transition() {
+		
+		
+		if(level==Main.totalLevels&&GameScreen.scoreKeeper.active){
+			Main.self.setScreen(new VictoryScreen(), TransitionType.SlideLeft);
+			return;
+		}
+		
+		
 		GameScreen.get().zoomInto(portal.getX(Align.center), portal.getY(Align.center));
 		transitioning=true;
 	}

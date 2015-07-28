@@ -16,7 +16,7 @@ public class ScoreKeeper extends Group{
 	public float currentTime;
 	public int currentDeaths;
 	public int currentHelp;
-	private boolean active;
+	public boolean active;
 
 	public static final int w=110;
 	public static final int h=90;

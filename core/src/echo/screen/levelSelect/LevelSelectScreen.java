@@ -8,7 +8,7 @@ import echo.utilities.Draw;
 import echo.utilities.TannScreen;
 
 public class LevelSelectScreen extends TannScreen{
-	static int levelsAcross=6;
+	static int levelsAcross=5;
 	static int levelsDown=(int) Math.ceil(Main.totalLevels/(float)levelsAcross);
 	static int xGap=(Gdx.graphics.getWidth()-(levelsAcross*LevelChoice.scale*Main.tilesAcross))/(levelsAcross+1);
 	static int yGap=(Gdx.graphics.getHeight()-(levelsDown*LevelChoice.scale*Main.tilesDown/2))/(levelsDown+1);

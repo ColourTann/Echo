@@ -3,18 +3,13 @@ package echo.entity;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import echo.Main;
 import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Draw;
-import echo.utilities.Font;
 import echo.utilities.Noise;
 
 public class Fairy extends Entity{

@@ -94,8 +94,13 @@ public class GameScreen extends TannScreen{
 	}
 
 	public void changeMap(int mapNum, boolean instant){
+		if(mapNum>Main.totalLevels){
+			
+			
+				mapNum=1;	
+			
+		}
 		if(currentMap!=null)currentMap.remove();
-		if(mapNum>Main.totalLevels) mapNum=1;
 		Fairy.setBrightness(Fairy.noHelp);
 		currentMap=new Map(mapNum);
 		currentMap.addDetails();
@@ -192,7 +197,7 @@ public class GameScreen extends TannScreen{
 		case Keys.NUMPAD_0:
 			nextLevel(true);
 			break;
-		case Keys.S:
+		case Keys.NUMPAD_1:
 			Main.self.setScreen(new VictoryScreen(), TransitionType.SlideLeft);
 			break;
 		}
