@@ -11,6 +11,7 @@ import echo.Main;
 import echo.entity.Fairy;
 import echo.map.Map;
 import echo.map.Map.MapState;
+import echo.screen.victoryScreen.VictoryScreen;
 import echo.utilities.TannScreen;
 import echo.utilities.TextRegion;
 
@@ -191,12 +192,16 @@ public class GameScreen extends TannScreen{
 		case Keys.NUMPAD_0:
 			nextLevel(true);
 			break;
+		case Keys.S:
+			Main.self.setScreen(new VictoryScreen(), TransitionType.SlideLeft);
+			break;
 		}
 	}
 
 	@Override
 	public void activate() {
 		Fairy.setBrightness(Fairy.noHelp);
+		Main.self.startMusic();
 	}
 
 	@Override

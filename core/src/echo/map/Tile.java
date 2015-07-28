@@ -1,5 +1,6 @@
 package echo.map;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -20,7 +21,7 @@ public class Tile extends Actor implements CollisionHandler{
 
 
 
-
+	
 	public static TextureRegion[] tileTextures = Main.atlas.findRegion("map/tiles").split(32, 32)[0];
 	public static TextureRegion[] backgrounds = new TextureRegion[4];
 	static TextureRegion spikeLeft;
@@ -60,6 +61,7 @@ public class Tile extends Actor implements CollisionHandler{
 	boolean decalBlock;
 	boolean spikeRotate;
 	float spikeGrace=8;
+	static Sound spikeSound = Gdx.audio.newSound(Gdx.files.internal("sfx/bramble.wav"));
 	public Tile(int x, int y, TerrainType type) {
 		setPosition(x*tileWidth,y*tileHeight);
 		collider=new Rectangle(x*tileWidth,y*tileHeight,tileWidth,visibleHeight);
@@ -286,6 +288,7 @@ public class Tile extends Actor implements CollisionHandler{
 	public CollisionResult handCollision(Player p) {
 		switch(type){
 		case spike:
+			spikeSound.play(p.getSoundMultiplier()*.5f);
 			return CollisionResult.Death;
 		default:
 			return null;

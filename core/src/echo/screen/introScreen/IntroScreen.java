@@ -1,6 +1,7 @@
 package echo.screen.introScreen;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -19,6 +20,7 @@ import echo.utilities.TannScreen;
 
 public class IntroScreen extends TannScreen{
 	static TextureRegion logo=Main.atlas.findRegion("sagdclogo");
+	static Random r = new Random(1);
 	ArrayList<Fairy> entities = new ArrayList<Fairy>();
 	public IntroScreen() {
 		init();
@@ -83,15 +85,15 @@ public class IntroScreen extends TannScreen{
 
 	private void addFairy(){
 		Fairy f = new Fairy();
-		boolean offHorizontal=Math.random()>.5;
+		boolean offHorizontal=r.nextFloat()>.5;
 		float startX, startY;
 		if(offHorizontal){
-			startX=(Math.random()>.5)?-150:Gdx.graphics.getWidth()+150;
-			startY=(float) (Math.random()*Gdx.graphics.getHeight());
+			startX=(r.nextFloat()>.5)?-150:Gdx.graphics.getWidth()+150;
+			startY=(float) (r.nextFloat()*Gdx.graphics.getHeight());
 		}
 		else{
-			startX=(float) (Math.random()*Gdx.graphics.getWidth());
-			startY=(Math.random()>.5)?-150:Gdx.graphics.getHeight()+150;
+			startX=(float) (r.nextFloat()*Gdx.graphics.getWidth());
+			startY=(r.nextFloat()>.5)?-150:Gdx.graphics.getHeight()+150;
 		}
 		f.setStart(startX, startY);
 		
@@ -106,7 +108,7 @@ public class IntroScreen extends TannScreen{
 				entities.remove(f);
 			}
 		}
-		fairyTicks=(float) (Math.random()*fairyRate);
+		fairyTicks=(float) (r.nextFloat()*fairyRate);
 	}
 	
 	boolean skipped;

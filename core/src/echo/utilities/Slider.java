@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 public class Slider extends Actor{
 	static float w=250,h=30, gap=4;
 	public static Slider SFX=  new Slider("SFX", .5f, Colours.colds4[1], Colours.colds4[2]);
+	public static Slider music=  new Slider("Music", .5f, Colours.colds4[1], Colours.colds4[2]);
 	
 	
 	private float value;
@@ -43,7 +44,13 @@ public class Slider extends Actor{
 		if(dragging){
 			value=((Gdx.input.getX())-getX()-getParent().getX()-gap)/(getWidth()-gap*2);
 			value=Math.max(0, Math.min(1, value));
+			if(slideAction!=null)slideAction.run();
 		}
+	}
+	
+	Runnable slideAction;
+	public void addSlideAction(Runnable r){
+		this.slideAction=r;
 	}
 	
 	@Override
@@ -53,7 +60,7 @@ public class Slider extends Actor{
 		Draw.fillRectangle(batch, getX(), getY(), getWidth(), getHeight());
 		batch.setColor(foreGround);
 		Draw.fillRectangle(batch, getX()+gap, getY()+gap, (getWidth()-gap*2)*value, getHeight()-gap*2);
-		Font.font.draw(batch, title, getX(), getY()+46, getWidth(), Align.center, false);		
+		Font.font.draw(batch, title, getX(), getY()+getHeight()/2+Font.font.getLineHeight()/2-3, getWidth(), Align.center, false);		
 	}
 	public float getValue(){
 		return value;

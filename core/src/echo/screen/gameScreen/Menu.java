@@ -49,7 +49,7 @@ public class Menu extends Group{
 				Main.self.toggleMenu();
 			}
 		});
-		startSpeedrun.setPosition(levelGap, getHeight()-startSpeedrun.getHeight()-40);
+		startSpeedrun.setPosition(levelGap, getHeight()-startSpeedrun.getHeight()-27);
 		
 		TextRegion levelSelect = new TextRegion("Level Select",stateButtonWidth);
 		levelSelect.setClickAction(new Runnable() {
@@ -60,14 +60,25 @@ public class Menu extends Group{
 				GameScreen.scoreKeeper.deactivate();
 			}
 		});
-		levelSelect.setPosition(getWidth()-levelGap-startSpeedrun.getWidth(), getHeight()-levelSelect.getHeight()-40);
+		levelSelect.setPosition(getWidth()-levelGap-startSpeedrun.getWidth(), getHeight()-levelSelect.getHeight()-27);
 		levelSelect.makeMouseable();
 		addActor(levelSelect);
 		
 		addActor(startSpeedrun);
 		
-		Slider.SFX.setPosition(getWidth()/2, getHeight()-Slider.SFX.getHeight()-110, Align.center);
-		addActor(Slider.SFX);		
+		Slider.SFX.setPosition(getWidth()/2, getHeight()-Slider.SFX.getHeight()-120, Align.center);
+		addActor(Slider.SFX);
+		
+		Slider.music.setPosition(getWidth()/2, getHeight()-Slider.SFX.getHeight()-70, Align.center);
+		Slider.music.addSlideAction(new Runnable() {
+			@Override
+			public void run() {
+				Main.self.updateMusicVolume();
+			}
+		});
+		addActor(Slider.music);
+		
+		
 		int gap =50;
 		int creditsOffset=30;
 		for(int i=0;i<3;i++){

@@ -55,8 +55,11 @@ public abstract class TannScreen {
 	private float maxTransitionTicks;
 	float startX, startY, endX, endY;
 	Interpolation interp;
+	boolean transitionOut;
+	boolean finishedTransitioning;
 	public void transition(TransitionType type, float time, Interpolation interp, boolean on){
-
+		transitionOut=!on;
+		finishedTransitioning=false;
 		transitionTicks=0;
 		maxTransitionTicks=time;
 		this.interp=interp;
@@ -91,16 +94,22 @@ public abstract class TannScreen {
 			}
 			endY=cam.position.y;
 		}
-		
+		cam.position.x=startX;
+		cam.position.y=startY;
 		cam.update();
 	}
 	public void updateAll(float delta) {
+		if(transitionOut&&finishedTransitioning)return;
 		tickTransition(delta);
 		update(delta);
 	}
 	public void tickTransition(float delta){
 		if(transitionType==null)return;
-		if(transitionTicks==maxTransitionTicks)return;
+		if(transitionTicks==maxTransitionTicks){
+			transitionType=null;
+			finishedTransitioning=true;
+			return;
+		}
 		transitionTicks+=delta;
 		if(transitionTicks>maxTransitionTicks)transitionTicks=maxTransitionTicks;
 		float ratio = transitionTicks/maxTransitionTicks;
@@ -124,6 +133,7 @@ public abstract class TannScreen {
 		cam.update();
 	}
 	public void doDraw(float delta){
+		if(transitionOut&&finishedTransitioning)return;
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
 		draw(delta);

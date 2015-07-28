@@ -1,5 +1,7 @@
 package echo.entity;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,13 +18,13 @@ import echo.utilities.Font;
 import echo.utilities.Noise;
 
 public class Fairy extends Entity{
-
-
+	static Random r = new Random(5);
 	static float animationSpeed=30;
 	public static TextureRegion[] animation;
 	static{
 		TextureRegion tr = Main.atlas.findRegion("entity/fairy");
 		animation= tr.split(tr.getRegionWidth()/6, tr.getRegionHeight())[0];
+		
 	}
 
 
@@ -30,7 +32,7 @@ public class Fairy extends Entity{
 	float startX, startY;
 	public void setStart(float x, float y){
 		startX=x; startY=y;
-		noiseOffset=(float) (Math.random()*1000);
+		noiseOffset=(float) (r.nextFloat()*1000);
 		setPosition(x, y);		
 		setupCollider();
 	}

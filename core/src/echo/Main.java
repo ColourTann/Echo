@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,18 +16,20 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import echo.entity.Entity;
 import echo.map.Map;
+import echo.screen.FPSWarning;
 import echo.screen.gameScreen.GameScreen;
 import echo.screen.gameScreen.Menu;
 import echo.screen.introScreen.IntroScreen;
 import echo.screen.levelSelect.LevelSelectScreen;
 import echo.utilities.Font;
+import echo.utilities.Slider;
 import echo.utilities.TannScreen;
 import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.86f;
-	public static final float frameSpeed = 1/60f;
+	public static final float version = 0.9f;
+	public static float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
 	public static TextureAtlas atlas;
@@ -37,11 +40,18 @@ public class Main extends ApplicationAdapter {
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
 	public static boolean debug=false;
-
+	public static boolean html=false;
+	Stage mainStage;
 	public static int totalLevels=28;
+	public static Music ambience;
+	public static Music intro;
 	@Override
 	public void create () {
+		ambience=Gdx.audio.newMusic(Gdx.files.internal("sfx/ambience.ogg"));
+		intro = Gdx.audio.newMusic(Gdx.files.internal("sfx/intro.ogg"));
+		startIntroSound();
 		extraBatch=new SpriteBatch();
+		mainStage=new Stage();
 		self=this;
 		atlas= new TextureAtlas(Gdx.files.internal("atlas_image.atlas"));
 		Map.setupMapParser();
@@ -60,12 +70,26 @@ public class Main extends ApplicationAdapter {
 		//		setScreen(LevelSelectScreen.get());
 	}
 
-
+	public void updateMusicVolume(){
+		ambience.setVolume(Slider.music.getValue()*.7f);
+	}
+	
 	public void setScreen(TannScreen screen){
 		setScreen(screen, null);
 	}
 
-
+	public void startMusic(){
+		intro.stop();
+		ambience.play();
+		ambience.setLooping(true);
+		updateMusicVolume();
+	}
+	
+	public void startIntroSound(){
+		intro.play();
+		intro.setVolume(Slider.music.getValue());
+	}
+	
 	public void setScreen(TannScreen screen, TransitionType type){
 		if(screen==currentScreen)return;
 		prevScreen=currentScreen;
@@ -93,7 +117,6 @@ public class Main extends ApplicationAdapter {
 		}
 	}
 
-
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 1, 1, 1);
@@ -104,11 +127,21 @@ public class Main extends ApplicationAdapter {
 		if(Menu.active){
 			menuStage.draw();
 		}
+		int fps = Gdx.graphics.getFramesPerSecond();
+		if(Main.ticks>10&&fps<50&&!ignoreWarnings&&html){
+			showFPSWarning();
+		}
+		
 		if(debug){
 			extraBatch.begin();
 			drawFPS(extraBatch);
 			extraBatch.end();
 		}
+		mainStage.draw();
+	}
+	
+	public void showFPSWarning(){
+		currentScreen.stage.addActor(FPSWarning.get());
 	}
 
 
@@ -122,10 +155,17 @@ public class Main extends ApplicationAdapter {
 		if(previous!=null)previous.updateAll(delta);
 		ticks+=Gdx.graphics.getDeltaTime();
 		Entity.update(delta);
+		mainStage.act(delta);
 	}
 
 	public void drawFPS(Batch batch){
 		Font.font.draw(batch, "fps: "+Gdx.graphics.getFramesPerSecond(), 0, 100);
+	}
+
+
+	static boolean ignoreWarnings;
+	public static void ignoreFPSWarnings() {
+		ignoreWarnings=true;
 	}
 
 
