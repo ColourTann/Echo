@@ -12,7 +12,13 @@ import echo.utilities.Font;
 public class Rank extends Actor{
 	
 	String title;
-	public enum RankName{D, C, B, A, S, M, GM};
+	public enum RankName{GM(210), M(250), S(300), A(500),B(700),C(900), D(99999);
+	int cutoff;
+	RankName(int cutoff){
+		this.cutoff=cutoff;
+	}
+	}
+	
 	public Rank(RankName r) {
 		this.title=r.toString();
 		addAction(Actions.fadeOut(.3f));

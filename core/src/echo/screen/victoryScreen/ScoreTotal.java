@@ -12,17 +12,20 @@ import echo.screen.victoryScreen.Rank.RankName;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Font;
 import echo.utilities.Slider;
+import echo.utilities.Sounds;
 
 public class ScoreTotal extends Group{
-	Sound ticker = Gdx.audio.newSound(Gdx.files.internal("sfx/ticker.wav"));
+	
 	float current;
 	float total;
 	String text;
+	Sound ticker= Sounds.am.get("sfx/ticker.wav", Sound.class);
+	Sound bell= Sounds.am.get("sfx/bell.wav", Sound.class);
+
 	public ScoreTotal(float total) {
 		setSize(220, 80);
 		setPosition(Gdx.graphics.getWidth()/3, Gdx.graphics.getHeight()/3, Align.center);
 		this.total=total;
-		System.out.println(total);
 		ticker.play(Slider.SFX.getValue());
 	}
 	static int textX=20, textY=50;
@@ -38,8 +41,19 @@ public class ScoreTotal extends Group{
 		if(ticks>1){
 			ticks=1;
 			ticked=true;
-			Rank r = new Rank(RankName.GM);
+			float seconds = total/1000f;
+			System.out.println(seconds);
+			RankName myRank=RankName.D;
+			for(RankName r : RankName.values()){
+				if(seconds<r.cutoff){
+					myRank=r;
+					break;
+				}
+				
+			}
+			Rank r = new Rank(myRank);
 			VictoryScreen.self.addRank(r);
+			bell.play(Slider.SFX.getValue());
 		}
 		current=terp.apply(0, total, ticks);
 		int ms = (int)((current)%1000)/10;

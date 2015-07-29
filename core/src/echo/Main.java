@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import echo.entity.Entity;
 import echo.map.Map;
+import echo.map.Tile;
 import echo.screen.FPSWarning;
 import echo.screen.gameScreen.GameScreen;
 import echo.screen.gameScreen.Menu;
@@ -24,12 +25,13 @@ import echo.screen.levelSelect.LevelSelectScreen;
 import echo.utilities.Colours;
 import echo.utilities.Font;
 import echo.utilities.Slider;
+import echo.utilities.Sounds;
 import echo.utilities.TannScreen;
 import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.92f;
+	public static final float version = 0.94f;
 	public static float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
@@ -41,17 +43,14 @@ public class Main extends ApplicationAdapter {
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
 	public static boolean debug=false;
-	public static boolean html=true;
+	public static boolean html=false;
 	Stage mainStage;
 	public static int totalLevels=25;
 	public static Music ambience;
 	public static Music intro;
 	@Override
 	public void create () {
-
-		ambience=Gdx.audio.newMusic(Gdx.files.internal("sfx/ambience.ogg"));
-		intro = Gdx.audio.newMusic(Gdx.files.internal("sfx/intro.ogg"));
-		startIntroSound();
+		Sounds.setup();
 		extraBatch=new SpriteBatch();
 		mainStage=new Stage();
 		self=this;
@@ -72,6 +71,13 @@ public class Main extends ApplicationAdapter {
 		//		setScreen(LevelSelectScreen.get());
 		
 		Font.setup();
+		
+		Tile.setup();
+		
+		intro = Sounds.am.get("sfx/intro.ogg", Music.class);
+		ambience = Sounds.am.get("sfx/ambience.ogg", Music.class);
+		
+		startIntroSound();
 	}
 
 	public void updateMusicVolume(){

@@ -1,32 +1,62 @@
 package echo.utilities;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
+
+import echo.map.Map.TerrainType;
 
 public class Sounds {
 	
-	//ENEMIES//
-	public static final Sound[] beeMove = new Sound[]{makeSound("sfx/beemove0.wav"), makeSound("sfx/beemove1.wav")};
+	public static AssetManager am= new AssetManager();
 	
-	//PLAYER//
-	public static final Sound dead = makeSound("sfx/dead.wav");
-	public static final Sound win = makeSound("sfx/win.wav");
-	public static final Sound[] jumpSound = new Sound[4];
-	public static final Sound[] landSound = new Sound[3];
-	public static final Sound[] wallSound = new Sound[1];
-	static{
-		for(int i=0;i<=0;i++){wallSound[i]=makeSound("sfx/wall"+i+".wav");}
-		for(int i=0;i<=2;i++){landSound[i]=makeSound("sfx/land"+i+".wav");}
-		for(int i=0;i<=3;i++){jumpSound[i]=makeSound("sfx/jump"+i+".wav");}
+	
+	/*
+	 * public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
+	Sound[] foot = new Sound[2];
+	TerrainType(){
+		for(int i=0;i<2;i++){
+			String s ="sfx/"+this+"foot"+i+".wav";
+			FileHandle f = Gdx.files.internal(s);
+			if(!f.exists()) break;
+			foot[i]=Sounds.makeSound(s);
+		}
 	}
+	 */
+	
+	public static void setup(){
+		// sfx //
+		makeSound("sfx/ticker.wav", Sound.class);
+		makeSound("sfx/bell.wav", Sound.class);
+		makeSound("sfx/win.wav", Sound.class);
+		makeSound("sfx/dead.wav", Sound.class);
+		makeSound("sfx/bramble.wav", Sound.class);
+		makeSound("sfx/wall.wav",Sound.class);
+		for(int i=0;i<=1;i++){makeSound("sfx/beemove"+i+".wav",Sound.class);}
+		for(int i=0;i<=2;i++){makeSound("sfx/land"+i+".wav",Sound.class);}
+		for(int i=0;i<=3;i++){makeSound("sfx/jump"+i+".wav",Sound.class);}
+		for(TerrainType t:TerrainType.values()){
+			for(int i=0;i<=1;i++){
+			
+				String s ="sfx/"+t+"foot"+i+".wav";
+				FileHandle f = Gdx.files.internal(s);
+				if(!f.exists()) continue;
+				makeSound(s, Sound.class);
+			}
+		}
 
+		
+		// music //
+		makeSound("sfx/intro.ogg", Music.class);
+		makeSound("sfx/ambience.ogg", Music.class);
+		
+		am.finishLoading();
+
+	}
 	
-	public static Sound spikeSound = makeSound("sfx/bramble.wav");
-	
-	
-	public static Sound makeSound(String path){
-		Sound s = Gdx.audio.newSound(Gdx.files.internal(path));
-		s.play(0);
-		return s;
+	public static void makeSound(String path, Class type){
+		am.load(path, type);
 	}
 }

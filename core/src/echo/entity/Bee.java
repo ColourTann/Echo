@@ -1,10 +1,12 @@
 package echo.entity;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+
 import echo.Main;
 import echo.map.Tile;
 import echo.utilities.Draw;
@@ -22,6 +24,7 @@ public class Bee extends Entity{
 	static float noiseFreq=1;
 	static float noiseAmp=30;
 	static TextureRegion[] animation;
+	Sound[] beeMove = new Sound[]{Sounds.am.get("sfx/beemove0.wav"), Sounds.am.get("sfx/beemove1.wav")}; 
 	static{
 		TextureRegion tr= Main.atlas.findRegion("entity/bee");
 		animation = tr.split(tr.getRegionWidth()/2, tr.getRegionHeight())[0];
@@ -69,7 +72,7 @@ public class Bee extends Entity{
 				if(!prime) return;
 				addAction(Actions.delay(.4f, Actions.run( new Runnable() {
 					public void run() {
-						Sounds.beeMove[moved?1:0].play(Slider.SFX.getValue());
+						beeMove[moved?0:1].play(Slider.SFX.getValue());
 					}
 				})));
 				

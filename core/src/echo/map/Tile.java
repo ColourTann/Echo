@@ -1,6 +1,10 @@
 package echo.map;
 
+import java.util.HashMap;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -61,6 +65,20 @@ public class Tile extends Actor implements CollisionHandler{
 	boolean decalBlock;
 	boolean spikeRotate;
 	float spikeGrace=8;
+	
+	static HashMap<TerrainType, Sound[]> stepSounds = new HashMap<Map.TerrainType, Sound[]>();
+	public static void setup(){
+		for(TerrainType t:TerrainType.values()){
+			
+
+				String s ="sfx/"+t+"foot0.wav";
+				String s1 ="sfx/"+t+"foot1.wav";
+				FileHandle f = Gdx.files.internal(s);
+				if(!f.exists()) continue;
+				stepSounds.put(t, new Sound[]{Sounds.am.get(s, Sound.class), Sounds.am.get(s1, Sound.class)});
+			
+		}
+	}
 	
 	public Tile(int x, int y, TerrainType type) {
 		setPosition(x*tileWidth,y*tileHeight);
@@ -176,7 +194,7 @@ public class Tile extends Actor implements CollisionHandler{
 		double rand = Math.random();
 		float boneThreshold = .05f;
 		float skullThreshold =	.05f;
-		float bigThreshold =.05f;
+		float bigThreshold =.02f;
 		if(rand<boneThreshold) {
 			decalBlock=true;
 			return decals[0];
@@ -238,7 +256,7 @@ public class Tile extends Actor implements CollisionHandler{
 	}
 
 	public void step(Player p){
-		Sound s=type.foot[(int) (Math.random()*2)];
+		Sound s=stepSounds.get(type)[(int) (Math.random()*2)];
 		if(s==null) return;
 		s.play(p.getSoundMultiplier(), 1, 0);
 	}
@@ -274,7 +292,7 @@ public class Tile extends Actor implements CollisionHandler{
 		default:
 			break;
 		}
-		Sound s=type.foot[(int) (Math.random()*2)];
+		Sound s=stepSounds.get(type)[(int) (Math.random()*2)];
 		if(s==null) return;
 		s.play(p.getSoundMultiplier(), getPitch(), 0);
 	}
@@ -284,11 +302,13 @@ public class Tile extends Actor implements CollisionHandler{
 		return(collider.overlaps(p.collider));
 	}
 
+	static Sound brambleSound = Sounds.am.get("sfx/bramble.wav", Sound.class);
+	
 	@Override
 	public CollisionResult handCollision(Player p) {
 		switch(type){
 		case spike:
-			Sounds.spikeSound.play(p.getSoundMultiplier()*.5f);
+			brambleSound.play(p.getSoundMultiplier()*.5f);
 			return CollisionResult.Death;
 		default:
 			return null;

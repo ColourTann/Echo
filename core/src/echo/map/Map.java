@@ -34,17 +34,7 @@ import echo.utilities.TannScreen.TransitionType;
 public class Map extends Group{
 	public enum MapState{Waiting, Playing, Replaying, Victory};
 	
-	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;
-	Sound[] foot = new Sound[2];
-	TerrainType(){
-		for(int i=0;i<2;i++){
-			String s ="sfx/"+this+"foot"+i+".wav";
-			FileHandle f = Gdx.files.internal(s);
-			if(!f.exists()) break;
-			foot[i]=Sounds.makeSound(s);
-		}
-	}
-	}
+	public enum TerrainType{background, player, goal, base, snow, stone, grass, metal, water, beeRight, beeDown, spike;}
 	public static final float deathDelay=.7f;
 	public Tile[][] tilesArray= new Tile[Main.tilesAcross][Main.tilesDown];
 	public ArrayList<Tile> tiles= new ArrayList<Tile>();

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -29,6 +30,14 @@ public class Player extends Entity{
 	static final byte byteJumpPressed= 	1<<3;
 	static final byte byteR= 	1<<4;
 	/*sounds*/
+	static Sound deathSound = Sounds.am.get("sfx/dead.wav", Sound.class);
+	static Sound winSound = Sounds.am.get("sfx/win.wav", Sound.class);
+	static Sound[] jumpSounds = new Sound[3];
+	static Sound[] landSounds = new Sound[2];
+	static{
+		 for(int i=0;i<3;i++) jumpSounds[i]= Sounds.am.get("sfx/jump"+i+".wav", Sound.class);
+		 for(int i=0;i<2;i++) landSounds[i]= Sounds.am.get("sfx/land"+i+".wav", Sound.class);
+	}
 	
 	/*constants*/
 	static final float animSpd=.04f;
@@ -204,7 +213,7 @@ public class Player extends Entity{
 
 	private void jump() {
 		if(jumpKindness<0||!active)return;
-		Sounds.jumpSound[(int) (Math.random()*Sounds.jumpSound.length)].play(getSoundMultiplier());
+		jumpSounds[(int) (Math.random()*jumpSounds.length)].play(getSoundMultiplier());
 		dy = jumpStrength;
 		airTime=0;
 		jumping=true;
@@ -304,7 +313,7 @@ public class Player extends Entity{
 		}
 		if(airTime>0){
 			t.land(this);
-			if(active) Sounds.landSound[(int) (Math.random()*Sounds.landSound.length)].play(getSoundMultiplier());
+			if(active) landSounds[(int) (Math.random()*landSounds.length)].play(getSoundMultiplier());
 		}
 		airTime=0;
 		if(stepper>stepsPerSound){
@@ -357,13 +366,13 @@ public class Player extends Entity{
 
 	public void die() {
 		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
-		Sounds.dead.play(getSoundMultiplier());
+		deathSound.play(getSoundMultiplier());
 		endLife();
 	}
 
 	public void win() {
 		victory=true;
-		Sounds.win.play(getSoundMultiplier());
+		winSound.play(getSoundMultiplier());
 		GameScreen.get().currentMap.levelComplete();
 		endLife();
 	}

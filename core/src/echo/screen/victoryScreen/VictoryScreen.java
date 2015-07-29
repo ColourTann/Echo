@@ -19,7 +19,6 @@ public class VictoryScreen extends TannScreen{
 		init();
 		self=this;
 		ScoreKeeper s = GameScreen.scoreKeeper;
-		System.out.println(s.currentTime);
 		parts[0]=new ScorePart((int)(s.currentTime*1000), 1, ScoreKeeper.time, PartType.Time);
 		parts[1]=new ScorePart(s.currentDeaths, 1, ScoreKeeper.death, PartType.Death);
 		parts[2]=new ScorePart(s.currentHelp, 1, ScoreKeeper.help, PartType.Help);
@@ -36,7 +35,6 @@ public class VictoryScreen extends TannScreen{
 			sp.setPosition(currentX, partY);
 			currentX+=gap+sp.getWidth();
 			totalScore+=sp.getValue();
-			System.out.println(totalScore);
 		}
 		total=new ScoreTotal(totalScore);
 		stage.addActor(total);
