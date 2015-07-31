@@ -4,26 +4,38 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Align;
 
 import echo.utilities.Colours;
 import echo.utilities.Draw;
 import echo.utilities.Font;
+import echo.utilities.TimeStuff;
 
 public class Rank extends Actor{
 	
-	String title;
-	public enum RankName{GM(210), M(250), S(300), A(500),B(700),C(900), D(99999);
-	int cutoff;
-	RankName(int cutoff){
-		this.cutoff=cutoff;
+	public enum RankName{GM(0, 180), M(180, 210), S(210, 300), A(300, 360),B(360, 480),C(480, 600), D(600, 0);
+	int lower, upper;
+	String desc="";
+	RankName(int lower, int upper){
+		this.lower=lower;
+		this.upper=upper;
+		if(lower==0){
+			desc+="<"+TimeStuff.timeString(upper);
+			return;
+		}
+		if(upper==0){
+			desc=TimeStuff.timeString(lower)+"+";
+			return;
+		}
+		desc+=TimeStuff.timeString(lower)+" - "+TimeStuff.timeString(upper);
 	}
 	}
-	
+	RankName r;
 	public Rank(RankName r) {
-		this.title=r.toString();
+		this.r=r;
 		addAction(Actions.fadeOut(.3f));
 		GlyphLayout gl =Font.largeLayout;
-		gl.setText(Font.hugeFont, title);
+		gl.setText(Font.hugeFont, r.toString());
 		setSize(gl.width+50, 150);
 	}
 	
@@ -37,13 +49,17 @@ public class Rank extends Actor{
 		Draw.drawRectangle(batch, getX(), getY(), getWidth(), getHeight(), 10);
 		
 		GlyphLayout gl =Font.largeLayout;
-		gl.setText(Font.hugeFont, title);
+		gl.setText(Font.hugeFont, r.toString());
 		
 		Font.hugeFont.setColor(Colours.light);
-		Font.hugeFont.draw(batch, title, getX()+(getWidth()-gl.width)/2, getY()+getHeight()/2+gl.height/2);
+		Font.hugeFont.draw(batch, r.toString(), getX()+(getWidth()-gl.width)/2, getY()+getHeight()/2+gl.height/2);
+		Font.largeFont.setColor(Colours.light);
+		Font.largeFont.draw(batch, r.desc, getX(), getY()-10, getWidth(), Align.center, false);
 		
 		batch.setColor(getColor());
-		Draw.fillRectangle(batch, getX(), getY(), getWidth(), getHeight());
+		Draw.fillRectangle(batch, getX(), getY(), getWidth(), getHeight()+10);
+		
+		
 		
 		batch.setColor(1,1,1,1);
 		super.draw(batch, parentAlpha);

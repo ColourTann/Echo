@@ -13,6 +13,7 @@ import echo.utilities.ButtonBorder;
 import echo.utilities.Font;
 import echo.utilities.Slider;
 import echo.utilities.Sounds;
+import echo.utilities.TimeStuff;
 
 public class ScoreTotal extends Group{
 	
@@ -41,11 +42,9 @@ public class ScoreTotal extends Group{
 		if(ticks>1){
 			ticks=1;
 			ticked=true;
-			float seconds = total/1000f;
-			System.out.println(seconds);
 			RankName myRank=RankName.D;
 			for(RankName r : RankName.values()){
-				if(seconds<r.cutoff){
+				if(total<r.upper){
 					myRank=r;
 					break;
 				}
@@ -56,10 +55,7 @@ public class ScoreTotal extends Group{
 			bell.play(Slider.SFX.getValue());
 		}
 		current=terp.apply(0, total, ticks);
-		int ms = (int)((current)%1000)/10;
-		int seconds = ((int)current/1000);
-		int minutes = seconds/60;
-		text=ScoreKeeper.pad(minutes, 2)+":"+ScoreKeeper.pad(seconds%60,2)+":"+ScoreKeeper.pad(ms, 2);
+		text=TimeStuff.timeString(current);
 	}
 	
 	@Override

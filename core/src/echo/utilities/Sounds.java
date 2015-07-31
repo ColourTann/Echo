@@ -1,10 +1,13 @@
 package echo.utilities;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
 
 import echo.map.Map.TerrainType;
 
@@ -53,10 +56,22 @@ public class Sounds {
 		makeSound("sfx/ambience.ogg", Music.class);
 		
 		am.finishLoading();
-
+		Array<Sound> sounds = new Array<Sound>();
+		am.getAll(Sound.class, sounds);
+		for(Sound s:sounds)s.play(0);
+		
+		Array<Music> musics = new Array<Music>();
+		am.getAll(Music.class, musics);
+		for(Music m:musics){
+			m.play();
+			m.setVolume(0);
+		}
+		
+		
 	}
 	
 	public static void makeSound(String path, Class type){
 		am.load(path, type);
+		
 	}
 }

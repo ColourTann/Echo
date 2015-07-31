@@ -9,36 +9,33 @@ import echo.screen.gameScreen.ScoreKeeper;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Draw;
 import echo.utilities.Font;
+import echo.utilities.TimeStuff;
 
 
 public class ScorePart extends Group{
 	TextureRegion region;
-	int value;
-	int multiplier;
+	float value;
+
 	String text;
 	public enum PartType{Time, Death, Help};
 	PartType type;
 	float picX=30, picY, textX=80, textY=80;
 	
-	public ScorePart(int value, int multiplier, TextureRegion region, PartType type) {
+	public ScorePart(float value, TextureRegion region, PartType type) {
 		this.type=type;
 		this.region=region;
 		this.value=value;
-		this.multiplier=multiplier;
+
 		
 		switch(type){
 		case Death:
-			text = ScoreKeeper.pad(value,2)+" * 2 = "+value*2;
+			text = TimeStuff.pad((int)value,2)+" * 2 = "+value*2;
 			break;
 		case Help:
-			text = ScoreKeeper.pad(value,2)+" * 10 = "+value*10;
+			text = TimeStuff.pad((int)value,2)+" * 10 = "+value*10;
 			break;
 		case Time:
-			int ms = (value%1000)/10;
-			int seconds =value/1000;
-			int minutes = seconds/60;
-			seconds %=60;
-			text= ScoreKeeper.pad(minutes,2)+":"+ScoreKeeper.pad(seconds,2)+":"+ScoreKeeper.pad(ms,2);
+			text= TimeStuff.timeString(value);
 			break;
 		default:
 			break;
@@ -51,9 +48,9 @@ public class ScorePart extends Group{
 	public float getValue(){
 		switch(type){
 		case Death:
-			return value*2*1000;
+			return value*2;
 		case Help:
-			return value*10*1000;
+			return value*10;
 		case Time:
 			return value;
 		default:

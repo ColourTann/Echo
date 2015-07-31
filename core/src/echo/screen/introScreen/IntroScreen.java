@@ -5,6 +5,7 @@ import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -16,23 +17,30 @@ import echo.entity.Fairy;
 import echo.screen.gameScreen.GameScreen;
 import echo.utilities.Colours;
 import echo.utilities.Draw;
+import echo.utilities.Slider;
+import echo.utilities.Sounds;
 import echo.utilities.TannScreen;
 
 public class IntroScreen extends TannScreen{
-	static TextureRegion logo=Main.atlas.findRegion("sagdclogo");
+	public static Music intro;
+	static TextureRegion logoPic=Main.atlas.findRegion("sagdclogo");
 	static Random r = new Random(1);
 	ArrayList<Fairy> entities = new ArrayList<Fairy>();
 	public IntroScreen() {
+		intro = Sounds.am.get("sfx/intro.ogg", Music.class);
 		init();
+		intro.play();
+		intro.setVolume(Slider.music.getValue());
 	}
 
 	@Override
 	public void keyPressed(int keyCode) {
 		switch(keyCode){
 		case Keys.SPACE:
-			skip();
+			
 			break;
 		}
+		skip();
 	}
 
 	private void lightsIntoBuffer(Batch batch){
@@ -57,7 +65,7 @@ public class IntroScreen extends TannScreen{
 		
 		Draw.fillRectangle(batch, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		batch.setColor(1,1,1,1);
-		Draw.drawCentered(batch, logo, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
+		Draw.drawCentered(batch, logoPic, Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		batch.end();
 		lightsIntoBuffer(batch);
 		batch.begin();
@@ -71,10 +79,11 @@ public class IntroScreen extends TannScreen{
 	float fairyTicks =0;
 	@Override
 	public void update(float delta) {
+		stage.act(delta);
+		if(titleScreen)return;
 		if(fairyRate<-.5f){
 			skip();
 		}
-		stage.act(delta);
 		fairyTicks-=delta;
 		fairyRate-=delta*.2f;
 		if(fairyRate<=0)return;
@@ -112,9 +121,20 @@ public class IntroScreen extends TannScreen{
 		fairyTicks=(float) (r.nextFloat()*fairyRate);
 	}
 	
+	
 	boolean skipped;
+	boolean titleScreen;
 	public void skip(){
 		if(skipped)return;
+		if(!titleScreen){
+			intro.stop();
+			Main.startMusic();
+			for(Fairy f:entities)f.remove();
+			titleScreen=true;
+			stage.addActor(new Title());
+			return;
+		}
+		
 		skipped=true;
 		Main.self.setScreen(GameScreen.get(), TransitionType.SlideLeft);
 		GameScreen.scoreKeeper.activate();

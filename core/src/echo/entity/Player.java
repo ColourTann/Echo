@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.utils.Align;
 
 import echo.Main;
 import echo.map.Tile;
@@ -360,7 +361,7 @@ public class Player extends Entity{
 		}
 		else toDraw=run[(int) frameTicker];
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
-		Draw.drawCentered(batch, toDraw, (int)(getX()-extraWidth+run[0].getRegionWidth()/2), (int)(getY()-extraHeight+run[0].getRegionHeight()/2));
+		Draw.drawCenteredRotatedScaled(batch, toDraw, (int)(getX()-extraWidth+run[0].getRegionWidth()/2), (int)(getY()-extraHeight+run[0].getRegionHeight()/2), getScaleX(), getScaleY(), getRotation());
 	}
 
 
@@ -375,6 +376,12 @@ public class Player extends Entity{
 		winSound.play(getSoundMultiplier());
 		GameScreen.get().currentMap.levelComplete();
 		endLife();
+		addAction(Actions.rotateBy(10, 1, Interpolation.pow2Out));
+		addAction(Actions.scaleTo(0f, 0f, 1, Interpolation.pow2Out));
+		Portal p = GameScreen.get().currentMap.portal;
+		addAction(Actions.moveTo(p.getX(), p.getY(), .2f, Interpolation.pow2Out));
+//		setPosition(, Align.center);
+		
 	}
 
 	public void endLife(){
@@ -443,7 +450,8 @@ public class Player extends Entity{
 		overridePositioning=false;
 		replaying=false;
 		facingSide=1;
-
+		setScale(1);
+		setRotation(0);
 		currentFrame=0;
 		frameTicker=0;
 

@@ -17,7 +17,7 @@ public class FPSWarning extends Group{
 	}
 	
 	public FPSWarning() {
-		TextRegion mainRegion = new TextRegion("Seems like the game is running slowly, probably because of something something web. Closing other tabs might help?", 300);
+		TextRegion mainRegion = new TextRegion("Seems like the game is running slowly. try the desktop version?", 300);
 		TextRegion download = new TextRegion("Get desktop version", 200);
 		mainRegion.setY(download.getHeight());
 		download.setPosition(0, 0);
@@ -27,7 +27,7 @@ public class FPSWarning extends Group{
 		addActor(download);
 		addActor(ignore);
 		setSize(mainRegion.getWidth(), mainRegion.getHeight()+download.getHeight());
-		setPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2, Align.center);
+		setPosition(Gdx.graphics.getWidth()/2, getHeight()/2, Align.center);
 		
 		download.makeMouseable();
 		ignore.makeMouseable();

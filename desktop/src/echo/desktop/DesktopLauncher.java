@@ -13,13 +13,13 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.resizable=false;
 		config.vSyncEnabled=true;
-		config.foregroundFPS=60;
+		config.foregroundFPS=40;
 		config.width=800;
 		config.height=640;
 		
 		Settings settings = new Settings();
 		settings.combineSubdirectories = true;
-//		TexturePacker.process(settings, "../images", "../core/assets", "atlas_image");
+		TexturePacker.process(settings, "../images", "../core/assets", "atlas_image");
 		config.title="Echo";
 		config.addIcon("icon.png", FileType.Internal);
 

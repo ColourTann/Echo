@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import echo.Main;
+import echo.entity.Fairy;
 import echo.utilities.TextRegion;
 
 public class FairyHelp extends TextRegion{
@@ -72,6 +73,7 @@ public class FairyHelp extends TextRegion{
 	public void reset(){
 		declined=false;
 		accepted=false;
+		Fairy.setBrightness(Fairy.noHelp);
 		hideFairyHelp();
 	}
 	

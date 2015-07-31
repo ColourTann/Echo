@@ -4,13 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Group;
-import com.badlogic.gdx.utils.Align;
-
 import echo.Main;
 import echo.utilities.ButtonBorder;
 import echo.utilities.Draw;
 import echo.utilities.Font;
-import echo.utilities.TextRegion;
+import echo.utilities.TimeStuff;
 
 public class ScoreKeeper extends Group{
 	public float currentTime;
@@ -66,23 +64,20 @@ public class ScoreKeeper extends Group{
 
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
-		int ms = (int) ((currentTime*1000)%1000)/10;
-		int seconds =(int) (currentTime);
-		int minutes = seconds/60;
-		seconds %=60;
-		String timeString = pad(minutes,2)+":"+pad(seconds,2)+":"+pad(ms,2);
+		
 		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), false);
 		float xOffset=15;
 		float yOffset=10;
 		float yTextOffset=yOffset+14;
 		float xTextOffset=xOffset+25;
 		float yGap=(getHeight()-yOffset*2)/3;
+		
 		Draw.draw(batch, time, getX()+xOffset, getY()+yOffset+yGap*2);
-		Font.font.draw(batch, timeString, getX()+xTextOffset, getY()+yTextOffset+yGap*2);
+		Font.font.draw(batch, TimeStuff.timeString(currentTime), getX()+xTextOffset, getY()+yTextOffset+yGap*2);
 		Draw.draw(batch, death, getX()+xOffset, getY()+yOffset+yGap*1);
-		Font.font.draw(batch, pad(currentDeaths,2)+"", getX()+xTextOffset, getY()+yTextOffset+yGap*1);
+		Font.font.draw(batch, TimeStuff.pad(currentDeaths,2)+"", getX()+xTextOffset, getY()+yTextOffset+yGap*1);
 		Draw.draw(batch, help, getX()+xOffset, getY()+yOffset+yGap*0);
-		Font.font.draw(batch, pad(currentHelp,2)+"", getX()+xTextOffset, getY()+yTextOffset+yGap*0);
+		Font.font.draw(batch, TimeStuff.pad(currentHelp,2)+"", getX()+xTextOffset, getY()+yTextOffset+yGap*0);
 		if(!active)return;
 		super.draw(batch, parentAlpha);
 	}
@@ -102,10 +97,6 @@ public class ScoreKeeper extends Group{
 		complete=true;
 	}
 
-	public static String pad(int input, int digits){
-		String output=input+"";
-		while(output.length()<digits) output="0"+output;
-		return output;
-	}
+	
 
 }

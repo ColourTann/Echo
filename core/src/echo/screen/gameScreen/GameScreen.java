@@ -101,7 +101,7 @@ public class GameScreen extends TannScreen{
 			
 		}
 		if(currentMap!=null)currentMap.remove();
-		Fairy.setBrightness(Fairy.noHelp);
+
 		currentMap=new Map(mapNum);
 		currentMap.addDetails();
 		stage.addActor(currentMap);
@@ -110,7 +110,7 @@ public class GameScreen extends TannScreen{
 			currentMap.finishedZooming();
 			setState(MapState.Waiting);
 		}
-		fairyHelp.hideFairyHelp();
+		fairyHelp.reset();
 	}
 
 	public void nextLevel(boolean instant) {
@@ -128,7 +128,7 @@ public class GameScreen extends TannScreen{
 	public void tickCam(float delta){
 		if(!zooming)return;
 
-		camTicker+=delta;
+		camTicker+=delta*2;
 		if(camTicker>1){
 			zooming=false;
 			camTicker=1;
@@ -205,7 +205,7 @@ public class GameScreen extends TannScreen{
 
 	@Override
 	public void activate() {
-		Fairy.setBrightness(Fairy.noHelp);
+		fairyHelp.reset();
 		Main.self.startMusic();
 	}
 

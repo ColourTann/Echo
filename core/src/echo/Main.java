@@ -31,7 +31,7 @@ import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.94f;
+	public static final float version = 0.95f;
 	public static float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
@@ -43,11 +43,11 @@ public class Main extends ApplicationAdapter {
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
 	public static boolean debug=false;
-	public static boolean html=false;
+	public static boolean html=true;
 	Stage mainStage;
 	public static int totalLevels=25;
 	public static Music ambience;
-	public static Music intro;
+
 	@Override
 	public void create () {
 		Sounds.setup();
@@ -67,39 +67,32 @@ public class Main extends ApplicationAdapter {
 				return false;
 			}
 		});
-		setScreen(new IntroScreen());
-		//		setScreen(LevelSelectScreen.get());
-		
 		Font.setup();
-		
 		Tile.setup();
-		
-		intro = Sounds.am.get("sfx/intro.ogg", Music.class);
 		ambience = Sounds.am.get("sfx/ambience.ogg", Music.class);
-		
-		startIntroSound();
+		double current = System.currentTimeMillis();
+		while(System.currentTimeMillis()<current+500){
+		}
+		setScreen(new IntroScreen());
+
 	}
 
 	public void updateMusicVolume(){
 		ambience.setVolume(Slider.music.getValue()*.7f);
 	}
-	
+
 	public void setScreen(TannScreen screen){
 		setScreen(screen, null);
 	}
 
-	public void startMusic(){
-		intro.stop();
+	public static void startMusic(){
+
 		ambience.play();
 		ambience.setLooping(true);
-		updateMusicVolume();
+		self.updateMusicVolume();
 	}
-	
-	public void startIntroSound(){
-		intro.play();
-		intro.setVolume(Slider.music.getValue());
-	}
-	
+
+
 	public void setScreen(TannScreen screen, TransitionType type){
 		if(screen==currentScreen)return;
 		prevScreen=currentScreen;
@@ -141,7 +134,7 @@ public class Main extends ApplicationAdapter {
 		if(Main.ticks>10&&fps<50&&!ignoreWarnings&&html){
 			showFPSWarning();
 		}
-		
+
 		if(debug){
 			extraBatch.begin();
 			drawFPS(extraBatch);
@@ -149,7 +142,7 @@ public class Main extends ApplicationAdapter {
 		}
 		mainStage.draw();
 	}
-	
+
 	public void showFPSWarning(){
 		currentScreen.stage.addActor(FPSWarning.get());
 	}

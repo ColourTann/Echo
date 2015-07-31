@@ -146,6 +146,19 @@ player/run
   index: -1
 
 atlas_image2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+title
+  rotate: false
+  xy: 2, 2
+  size: 800, 640
+  orig: 800, 640
+  offset: 0, 0
+  index: -1
+
+atlas_image3.png
 size: 512,1024
 format: RGBA8888
 filter: Nearest,Nearest
