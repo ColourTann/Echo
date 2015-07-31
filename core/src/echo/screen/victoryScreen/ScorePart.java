@@ -19,7 +19,7 @@ public class ScorePart extends Group{
 	String text;
 	public enum PartType{Time, Death, Help};
 	PartType type;
-	float picX=30, picY, textX=80, textY=80;
+	float picX=40, picY, textX=70, textY=82;
 	
 	public ScorePart(float value, TextureRegion region, PartType type) {
 		this.type=type;
@@ -40,8 +40,8 @@ public class ScorePart extends Group{
 		default:
 			break;
 		}
-		Font.largeLayout.setText(Font.largeFont, text);
-		setSize(Font.largeLayout.width+105, 80);
+		Font.largeLayout.setText(Font.font, text);
+		setSize(Font.largeLayout.width+105, 50);
 		picY=getHeight()/2-region.getRegionHeight()/2*2;
 	}
 	
@@ -64,8 +64,8 @@ public class ScorePart extends Group{
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), false);
-		Draw.drawScaled(batch, region, getX()+picX, getY()+picY, 2, 2);
-		Font.largeFont.draw(batch, text+"", getX()+textX, getY()+picY+region.getRegionHeight()/2+Font.largeFont.getCapHeight()*1);
+		Draw.drawCentered(batch, region, getX()+picX, getY()+getHeight()/2);
+		Font.font.draw(batch, text+"", getX()+textX, getY()+picY+region.getRegionHeight()/2+Font.largeFont.getCapHeight()*1);
 		super.draw(batch, parentAlpha);
 	}
 }

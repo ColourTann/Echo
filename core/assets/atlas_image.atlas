@@ -6,140 +6,154 @@ filter: Nearest,Nearest
 repeat: none
 entity/bee
   rotate: false
-  xy: 616, 228
+  xy: 616, 256
   size: 34, 15
   orig: 34, 15
   offset: 0, 0
   index: -1
 entity/brambles
   rotate: false
-  xy: 804, 800
+  xy: 2, 71
   size: 128, 32
   orig: 128, 32
   offset: 0, 0
   index: -1
 entity/fairy
   rotate: false
-  xy: 452, 218
+  xy: 452, 246
   size: 162, 25
   orig: 162, 25
   offset: 0, 0
   index: -1
 entity/frog
   rotate: false
-  xy: 160, 110
+  xy: 274, 138
   size: 68, 30
   orig: 68, 30
   offset: 0, 0
   index: -1
 entity/portal
   rotate: false
-  xy: 804, 834
+  xy: 804, 862
   size: 196, 51
   orig: 196, 51
   offset: 0, 0
   index: -1
 entity/spike
   rotate: false
-  xy: 934, 800
+  xy: 962, 828
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 icon/deaths
   rotate: false
-  xy: 1002, 869
+  xy: 1002, 897
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 icon/help
   rotate: false
-  xy: 804, 716
+  xy: 804, 735
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
+icon/icons
+  rotate: false
+  xy: 176, 136
+  size: 96, 32
+  orig: 96, 32
+  offset: 0, 0
+  index: -1
 icon/time
   rotate: false
-  xy: 870, 782
+  xy: 870, 801
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
   index: -1
 interface/corner
   rotate: false
-  xy: 2, 2
+  xy: 132, 74
   size: 29, 29
   orig: 29, 29
   offset: 0, 0
   index: -1
 interface/edge
   rotate: false
-  xy: 452, 212
+  xy: 452, 240
   size: 1, 4
   orig: 1, 4
   offset: 0, 0
   index: -1
 interface/frill
   rotate: false
-  xy: 68, 90
+  xy: 176, 127
   size: 31, 7
   orig: 31, 7
   offset: 0, 0
   index: -1
 map/background
   rotate: false
-  xy: 2, 245
+  xy: 2, 273
   size: 800, 640
   orig: 800, 640
   offset: 0, 0
   index: -1
 map/portal
   rotate: false
-  xy: 2, 99
+  xy: 804, 819
   size: 156, 41
   orig: 156, 41
   offset: 0, 0
   index: -1
 map/tiles
   rotate: false
-  xy: 2, 211
+  xy: 2, 239
   size: 448, 32
   orig: 448, 32
   offset: 0, 0
   index: -1
 mask
   rotate: false
-  xy: 2, 33
+  xy: 804, 753
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 normalmask
   rotate: false
-  xy: 804, 734
+  xy: 2, 5
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 pixel
   rotate: false
-  xy: 160, 107
+  xy: 2, 2
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
+player/death
+  rotate: false
+  xy: 2, 105
+  size: 172, 63
+  orig: 172, 63
+  offset: 0, 0
+  index: -1
 player/idle
   rotate: false
-  xy: 404, 142
+  xy: 404, 170
   size: 27, 67
   orig: 27, 67
   offset: 0, 0
   index: -1
 player/run
   rotate: false
-  xy: 2, 142
+  xy: 2, 170
   size: 400, 67
   orig: 400, 67
   offset: 0, 0

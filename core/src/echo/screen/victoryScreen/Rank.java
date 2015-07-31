@@ -53,8 +53,8 @@ public class Rank extends Actor{
 		
 		Font.hugeFont.setColor(Colours.light);
 		Font.hugeFont.draw(batch, r.toString(), getX()+(getWidth()-gl.width)/2, getY()+getHeight()/2+gl.height/2);
-		Font.largeFont.setColor(Colours.light);
-		Font.largeFont.draw(batch, r.desc, getX(), getY()-10, getWidth(), Align.center, false);
+		Font.font.setColor(Colours.light);
+		Font.font.draw(batch, r.desc, getX(), getY()-10, getWidth(), Align.center, false);
 		
 		batch.setColor(getColor());
 		Draw.fillRectangle(batch, getX(), getY(), getWidth(), getHeight()+10);

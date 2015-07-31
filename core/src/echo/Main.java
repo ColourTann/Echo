@@ -31,7 +31,7 @@ import echo.utilities.TannScreen.TransitionType;
 
 
 public class Main extends ApplicationAdapter {
-	public static final float version = 0.95f;
+	public static final float version = 1;
 	public static float frameSpeed = 1/60f;
 	public static int tilesAcross=25;
 	public static int tilesDown=40;
@@ -43,7 +43,7 @@ public class Main extends ApplicationAdapter {
 	private TannScreen currentScreen;
 	private SpriteBatch extraBatch;
 	public static boolean debug=false;
-	public static boolean html=true;
+	public static boolean html=false;
 	Stage mainStage;
 	public static int totalLevels=25;
 	public static Music ambience;

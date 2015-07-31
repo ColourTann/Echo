@@ -20,7 +20,7 @@ public class VictoryScreen extends TannScreen{
 		self=this;
 		ScoreKeeper s = GameScreen.scoreKeeper;
 		parts[0]=new ScorePart(s.currentTime,  ScoreKeeper.time, PartType.Time);
-		parts[1]=new ScorePart(s.currentDeaths+200,  ScoreKeeper.death, PartType.Death);
+		parts[1]=new ScorePart(s.currentDeaths,  ScoreKeeper.death, PartType.Death);
 		parts[2]=new ScorePart(s.currentHelp,  ScoreKeeper.help, PartType.Help);
 		int partY=400;
 		int totalWidth=0;

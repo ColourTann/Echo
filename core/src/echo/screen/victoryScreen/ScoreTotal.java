@@ -24,12 +24,12 @@ public class ScoreTotal extends Group{
 	Sound bell= Sounds.am.get("sfx/bell.wav", Sound.class);
 
 	public ScoreTotal(float total) {
-		setSize(220, 80);
+		setSize(120, 50);
 		setPosition(Gdx.graphics.getWidth()/3, Gdx.graphics.getHeight()/3, Align.center);
 		this.total=total;
 		ticker.play(Slider.SFX.getValue());
 	}
-	static int textX=20, textY=50;
+	static int textX=17, textY=31;
 	Interpolation terp = new Interpolation.SwingOut(20);
 	float time=5f;
 	float ticks;
@@ -61,7 +61,7 @@ public class ScoreTotal extends Group{
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), false);
-		Font.largeFont.draw(batch, "Total: "+text, getX()+textX, getY()+textY);
+		Font.font.draw(batch, "Total: "+text, getX()+textX, getY()+textY);
 		super.draw(batch, parentAlpha);
 	}
 }

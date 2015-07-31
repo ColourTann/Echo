@@ -16,12 +16,21 @@ public class ScoreKeeper extends Group{
 	public int currentHelp;
 	public boolean active;
 
-	public static final int w=110;
-	public static final int h=90;
+	public static final int w=120;
+	public static final int h=120;
 	
-	public static TextureRegion time = Main.atlas.findRegion("icon/time");
-	public static TextureRegion death = Main.atlas.findRegion("icon/deaths");
-	public static TextureRegion help = Main.atlas.findRegion("icon/help");
+	public static TextureRegion time;
+	public static TextureRegion death;
+	public static TextureRegion help;
+	static{
+		
+		TextureRegion icons = Main.atlas.findRegion("icon/icons");
+		TextureRegion[] split = icons.split(icons.getRegionWidth()/3, icons.getRegionHeight())[0];
+		time=split[0];
+		help=split[1];
+		death=split[2];
+		
+	}
 	public ScoreKeeper() {
 		setSize(w, h);
 		setPosition(Gdx.graphics.getWidth()-getWidth(), Gdx.graphics.getHeight()-getHeight());
@@ -68,8 +77,8 @@ public class ScoreKeeper extends Group{
 		ButtonBorder.drawBorder(batch, getX(), getY(), getWidth(), getHeight(), false);
 		float xOffset=15;
 		float yOffset=10;
-		float yTextOffset=yOffset+14;
-		float xTextOffset=xOffset+25;
+		float yTextOffset=yOffset+20;
+		float xTextOffset=xOffset+38;
 		float yGap=(getHeight()-yOffset*2)/3;
 		
 		Draw.draw(batch, time, getX()+xOffset, getY()+yOffset+yGap*2);

@@ -189,10 +189,6 @@ public class Map extends Group{
 		if(Menu.active)return;
 		if(transitioning||!finishedZooming) return;
 		switch(keyCode){
-		case Keys.HOME:
-			lightsOn(); // cheeeats //
-			break;
-
 		case Keys.UP:
 		case Keys.LEFT:
 		case Keys.RIGHT:

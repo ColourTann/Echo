@@ -194,19 +194,19 @@ public class GameScreen extends TannScreen{
 	@Override
 	public void keyPressed(int keyCode) {
 		switch(keyCode){
-		case Keys.NUMPAD_0:
-			nextLevel(true);
-			break;
-		case Keys.NUMPAD_1:
-			Main.self.setScreen(new VictoryScreen(), TransitionType.SlideLeft);
-			break;
+//		case Keys.NUMPAD_0:
+//			nextLevel(true);
+//			break;
+//		case Keys.NUMPAD_1:
+//			Main.self.setScreen(new VictoryScreen(), TransitionType.SlideLeft);
+//			break;
 		}
 	}
 
 	@Override
 	public void activate() {
 		fairyHelp.reset();
-		Main.self.startMusic();
+		Main.startMusic();
 	}
 
 	@Override

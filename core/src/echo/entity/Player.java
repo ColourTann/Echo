@@ -59,6 +59,11 @@ public class Player extends Entity{
 		TextureRegion sheetRun = Main.atlas.findRegion("player/run");
 		run = sheetRun.split(sheetRun.getRegionWidth()/8, sheetRun.getRegionHeight())[0];
 	}
+	static TextureRegion[] death;
+	static{
+		TextureRegion sheetDeath= Main.atlas.findRegion("player/death");
+		death = sheetDeath.split(sheetDeath.getRegionWidth()/4, sheetDeath.getRegionHeight())[0];
+	}
 
 
 	static TextureRegion idle = Main.atlas.findRegion("player/idle");
@@ -96,6 +101,7 @@ public class Player extends Entity{
 	int id=0;
 	int fn;
 	CollisionHandler finalCollision;
+	private static double deathAnimationSpeed=8;
 	public Player(int x, int y) {
 		startX=x*Tile.tileWidth; startY=y*Tile.tileHeight;
 		reset();
@@ -360,12 +366,20 @@ public class Player extends Entity{
 			else toDraw = run[6];	
 		}
 		else toDraw=run[(int) frameTicker];
+		
+		if(deathStart>=0){
+			int deathFrame= (int) ((Main.ticks-deathStart)*deathAnimationSpeed);
+			deathFrame=Math.min(3, deathFrame);
+			toDraw=death[deathFrame];
+		}
+		
 		toDraw.flip(toDraw.isFlipX()==(facingSide==1), false);
 		Draw.drawCenteredRotatedScaled(batch, toDraw, (int)(getX()-extraWidth+run[0].getRegionWidth()/2), (int)(getY()-extraHeight+run[0].getRegionHeight()/2), getScaleX(), getScaleY(), getRotation());
 	}
 
-
+	double deathStart=-1;
 	public void die() {
+//		deathStart=Main.ticks;
 		if(active&&!replay) GameScreen.get().currentMap.levelFailed();
 		deathSound.play(getSoundMultiplier());
 		endLife();
@@ -440,6 +454,7 @@ public class Player extends Entity{
 
 	@Override
 	public void reset() {
+		deathStart=-1;
 		fn=0;
 		stepper=0;
 		dx=0;dy=0;
